@@ -34,7 +34,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        // ✅ At this point the app shows the MENU screen.
+        // At this point the app shows the MENU screen.
         // The game will only load when the Play button is clicked (handled in MenuController).
     }
 
