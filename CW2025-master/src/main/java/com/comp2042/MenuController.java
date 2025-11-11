@@ -34,7 +34,7 @@ public class MenuController {
         alert.showAndWait();
     }
 
-    // MUSIC toggle → simple on/off toggle
+    // On off toggle for music
     @FXML
     private void onMusicToggle(ActionEvent event) {
         boolean isOn = musicToggle.isSelected();
