@@ -3,6 +3,7 @@ package com.comp2042;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -17,10 +18,25 @@ public class MenuController {
     // PLAY button → switch from Menu.fxml to Gui.fxml (your game)
     @FXML
     private void onPlayClicked(ActionEvent event) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Gui.fxml"));
-        Scene gameScene = new Scene(loader.load());
+        //try to load file safely from resources
+        var location = getClass().getClassLoader().getResource("gamelayout.fxml");
+        if(location == null){
+            throw new IllegalStateException("fxml not found");
+        }
+        //load fxml file
+        FXMLLoader loader = new FXMLLoader(location);
+        Parent root = (Parent) loader.load(); //build UI tree
+
+        // get javaFx for the game screen
+        GuiController guiController = loader.getController();
+
+        // game logic starting
+        new GameController(guiController);
+
         Stage stage = (Stage) playButton.getScene().getWindow();
+        Scene gameScene = new Scene(root, 300, 510);
         stage.setScene(gameScene);
+        stage.setTitle("TetrisJFX - Game");
         stage.show();
     }
 
