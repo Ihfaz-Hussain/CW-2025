@@ -50,13 +50,22 @@ public class MenuController {
         alert.showAndWait();
     }
 
-    // On off toggle for music
+    //Music Controller
     @FXML
     private void onMusicToggle(ActionEvent event) {
         boolean isOn = musicToggle.isSelected();
-        musicToggle.setText(isOn ? "Music: ON" : "Music: OFF");
-        System.out.println("Music toggled: " + (isOn ? "ON" : "OFF"));
+
+        if (isOn) {
+            // Turn music ON
+            AudioManager.playBackground();
+            musicToggle.setText("Music: ON");
+        } else {
+            // Turn music OFF
+            AudioManager.pauseBackground();
+            musicToggle.setText("Music: OFF");
+        }
     }
+
 
     // EXIT button → close the app
     @FXML
