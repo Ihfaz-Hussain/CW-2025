@@ -19,9 +19,8 @@ public class AudioManager {
             return;
         }
 
+        //try-catch block for fetching the sound file
         try {
-            // 1. Find the file inside resources:
-            //    src/main/resources/audio/tetris_theme.wav
             URL soundUrl = AudioManager.class.getResource("/audio/tetris_theme.wav");
 
             if (soundUrl == null) {
