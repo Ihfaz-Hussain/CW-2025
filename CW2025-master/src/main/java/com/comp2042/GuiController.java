@@ -19,6 +19,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
+import javafx.scene.control.Button;
+
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -27,6 +29,8 @@ public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
 
+    @FXML
+    private Button pauseButton;
     @FXML
     private GridPane gamePanel;
 
@@ -220,6 +224,34 @@ public class GuiController implements Initializable {
     }
 
     public void pauseGame(ActionEvent actionEvent) {
+        // Do nothing if the game is already over
+        if (isGameOver.getValue() == Boolean.TRUE) {
+            return;
+        }
+
+        // Toggle pause state
+        if (isPause.getValue() == Boolean.FALSE) {
+            // Currently running → pause it
+            if (timeLine != null) {
+                timeLine.stop();
+            }
+            isPause.setValue(Boolean.TRUE);
+            if (pauseButton != null) {
+                pauseButton.setText("Resume");
+            }
+        } else {
+            // Currently paused → resume it
+            if (timeLine != null) {
+                timeLine.play();
+            }
+            isPause.setValue(Boolean.FALSE);
+            if (pauseButton != null) {
+                pauseButton.setText("Pause");
+            }
+        }
+
+        // Keep keyboard focus on the game panel
         gamePanel.requestFocus();
     }
+
 }
