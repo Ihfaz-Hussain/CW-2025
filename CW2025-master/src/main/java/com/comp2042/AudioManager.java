@@ -28,13 +28,13 @@ public class AudioManager {
                 return;
             }
 
-            // 2. Open it as an audio stream
+            //Open it as an audio stream
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundUrl);
 
-            // 3. Get a Clip (small audio player) from the system
+            //Get a Clip (small audio player) from the system
             bgClip = AudioSystem.getClip();
 
-            // 4. Load the audio data into the Clip
+            //Load the audio data into the Clip
             bgClip.open(audioIn);
 
             // 5. Loop forever when played

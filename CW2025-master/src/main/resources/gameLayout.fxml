@@ -10,10 +10,16 @@
       xmlns:fx="http://javafx.com/fxml">
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
+        <!--gameboard in center-->
         <center>
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
         </center>
     </BorderPane>
+
+    <!--score label-->
+    <Label fx:id = "scoreLabel"
+           text = "Score : 0"
+           style = "-fx-text-fill: white; -fx-font-size: 18px;"/>
 
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
         <VBox alignment="CENTER">

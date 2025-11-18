@@ -2,6 +2,7 @@ package com.comp2042;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -10,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -33,15 +35,14 @@ public class GuiController implements Initializable {
     private Button pauseButton;
     @FXML
     private GridPane gamePanel;
-
     @FXML
     private Group groupNotification;
-
     @FXML
     private GridPane brickPanel;
-
     @FXML
     private GameOverPanel gameOverPanel;
+    @FXML
+    private Label scoreLabel;
 
     private Rectangle[][] displayMatrix;
 
@@ -205,6 +206,11 @@ public class GuiController implements Initializable {
     }
 
     public void bindScore(IntegerProperty integerProperty) {
+        if (scoreLabel != null && integerProperty != null) {
+            scoreLabel.textProperty().bind(
+                    Bindings.concat("Score: ", integerProperty)
+            );
+        }
     }
 
     public void gameOver() {
@@ -254,4 +260,11 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
+    public Label getScorelabel() {
+        return scoreLabel;
+    }
+
+    public void setScorelabel(Label scorelabel) {
+        this.scoreLabel = scorelabel;
+    }
 }
