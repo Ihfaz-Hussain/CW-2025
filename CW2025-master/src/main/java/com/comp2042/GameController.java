@@ -30,11 +30,13 @@ public class GameController implements InputEventListener {
 
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
 
-        } else {
+        }
+        //doesn't match tetris game logic
+        /*else {
             if (event.getEventSource() == EventSource.USER) {
                 board.getScore().add(1);
             }
-        }
+        }*/
         return new DownData(clearRow, board.getViewData());
     }
 

@@ -40,7 +40,7 @@ public class MenuController {
         stage.show();
     }
 
-    // HIGH SCORE button → placeholder (you can implement later)
+    // HIGH SCORE button
     @FXML
     private void onHighScoreClicked(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

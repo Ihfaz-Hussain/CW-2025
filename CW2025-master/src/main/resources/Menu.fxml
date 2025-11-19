@@ -9,10 +9,9 @@
       fx:controller="com.comp2042.MenuController"
       alignment="CENTER"
       spacing="20"
-      style="-fx-background-color: linear-gradient(to bottom, #111111, #333333);
-             -fx-padding: 50;">
+styleClass="@window_style.css"
+stylesheets="window_style.css">
     <Label text="TETRIS" style="-fx-font-size: 36px; -fx-text-fill: white;"/>
-
     <Button fx:id="playButton"
             text="Play"
             onAction="#onPlayClicked"
