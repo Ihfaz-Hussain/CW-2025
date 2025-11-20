@@ -20,6 +20,9 @@
     <Label fx:id = "scoreLabel"
            text = "Score : 0"
            style = "-fx-text-fill: white; -fx-font-size: 18px;"/>
+    <Label fx:id = "levelLabel" text = "Level1">
+
+    </Label>
 
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
         <VBox alignment="CENTER">

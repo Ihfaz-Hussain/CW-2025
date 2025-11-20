@@ -9,8 +9,8 @@
       fx:controller="com.comp2042.MenuController"
       alignment="CENTER"
       spacing="20"
-styleClass="@window_style.css"
-stylesheets="window_style.css">
+styleClass="mainMenu"
+stylesheets="@/window_style.css">
     <Label text="TETRIS" style="-fx-font-size: 36px; -fx-text-fill: white;"/>
     <Button fx:id="playButton"
             text="Play"

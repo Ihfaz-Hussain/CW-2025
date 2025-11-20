@@ -7,11 +7,18 @@ public class GameController implements InputEventListener {
     private final GuiController viewGuiController;
 
     public GameController(GuiController c) {
+        // Connect GUI to this controller so key presses call our methods
         viewGuiController = c;
         board.createNewBrick();
+        // Connect GUI to this controller so key presses call our methods
         viewGuiController.setEventListener(this);
+        // Draw the initial board + current brick
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
+        // Bind score label to score property
         viewGuiController.bindScore(board.getScore().scoreProperty());
+        //Bind level label to level property
+        viewGuiController.bindLevel(board.getScore().levelProperty());
+
     }
 
     @Override
@@ -31,6 +38,7 @@ public class GameController implements InputEventListener {
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
 
         }
+
         //doesn't match tetris game logic
         /*else {
             if (event.getEventSource() == EventSource.USER) {

@@ -43,6 +43,9 @@ public class GuiController implements Initializable {
     private GameOverPanel gameOverPanel;
     @FXML
     private Label scoreLabel;
+    @FXML
+    private Label levelLabel;
+
 
     private Rectangle[][] displayMatrix;
 
@@ -212,6 +215,46 @@ public class GuiController implements Initializable {
             );
         }
     }
+    public void bindLevel(IntegerProperty levelProperty) {
+        if (levelLabel != null && levelProperty != null) {
+
+            // Show "Level: X" in the label
+            levelLabel.textProperty().bind(
+                    Bindings.concat("Level: ", levelProperty)
+            );
+
+            // When the level changes, adjust the falling speed
+            levelProperty.addListener((obs, oldVal, newVal) -> {
+                int level = newVal.intValue();
+                updateSpeedForLevel(level);
+            });
+
+            // Make sure speed matches initial level (1) when game starts
+            updateSpeedForLevel(levelProperty.get());
+        }
+    }
+
+    /*
+     * Adjusts the Timeline speed so pieces fall faster at higher levels.
+     * rate = 1.0 → normal speed
+     * rate = 2.0 → twice as fast
+     */
+    private void updateSpeedForLevel(int level) {
+        if (timeLine == null) {
+            return;
+        }
+
+        //every level increases rate by 0.2, minimum rate 1.0..
+        double rate = 1.0 + (level - 1) * 0.2;
+
+        // Optional: clamp to avoid insane speeds
+        if (rate > 4.0) {
+            rate = 4.0;
+        }
+
+        timeLine.setRate(rate);
+    }
+
 
     public void gameOver() {
         timeLine.stop();
