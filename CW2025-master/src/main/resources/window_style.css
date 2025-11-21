@@ -147,3 +147,13 @@
 .mainMenu #musicToggle:selected {
     -fx-background-color: #6633cc;
 }
+
+.game-label {
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;   /* Extra bold */
+    -fx-font-family: "Consolas", "Fira Code", monospace;
+
+    /* Soft glow around text */
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 8, 0.8, 0, 0);
+}
