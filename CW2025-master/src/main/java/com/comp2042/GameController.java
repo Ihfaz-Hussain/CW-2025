@@ -32,6 +32,13 @@ public class GameController implements InputEventListener {
                 board.getScore().add(clearRow.getScoreBonus());
             }
             if (board.createNewBrick()) {
+                // 1. Get the final score from the board
+                int finalScore = board.getScore().getScore();
+
+                // 2. Ask HighScoreManager to save it if it is a new high score
+                HighScoreManager.saveHighScore(finalScore);
+
+                // 3. Show game over screen
                 viewGuiController.gameOver();
             }
 

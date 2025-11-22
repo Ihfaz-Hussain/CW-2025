@@ -53,4 +53,8 @@
             totalLines.setValue(0);
             level.setValue(1);
         }
+
+        public int getScore(){
+            return score.get();
+        }
     }
