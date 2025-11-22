@@ -28,22 +28,27 @@ public class GameController implements InputEventListener {
         if (!canMove) {
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
+
             if (clearRow.getLinesRemoved() > 0) {
+                // Add score based on cleared lines
                 board.getScore().add(clearRow.getScoreBonus());
+                // (If you track level/lines, call that here too)
             }
+
+            // If we cannot place a new brick → game over
             if (board.createNewBrick()) {
-                // 1. Get the final score from the board
+
+                // 1. Get the final score from the Score object
                 int finalScore = board.getScore().getScore();
 
-                // 2. Ask HighScoreManager to save it if it is a new high score
-                HighScoreManager.saveHighScore(finalScore);
+                // 2. Tell HighScoreManager to record this score
+                HighScoreManager.recordScore(finalScore);
 
-                // 3. Show game over screen
+                // 3. Show game over panel
                 viewGuiController.gameOver();
             }
 
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
-
         }
 
         //doesn't match tetris game logic
