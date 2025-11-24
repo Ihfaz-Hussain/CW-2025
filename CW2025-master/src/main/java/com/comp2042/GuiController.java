@@ -3,6 +3,7 @@ package com.comp2042;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -11,10 +12,12 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -45,6 +48,9 @@ public class GuiController implements Initializable {
     private Label scoreLabel;
     @FXML
     private Label levelLabel;
+
+    @FXML
+    private BorderPane gameBoard;
 
 
     private Rectangle[][] displayMatrix;
@@ -206,6 +212,31 @@ public class GuiController implements Initializable {
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
+    }
+
+    public void bindToScene(Scene scene) {
+        // "Base" size you designed for (your old Scene size)
+        double baseWidth = 300.0;
+        double baseHeight = 510.0;
+
+        // Compute a scale factor that keeps aspect ratio
+        DoubleBinding scale = Bindings.createDoubleBinding(
+                () -> {
+                    double xScale = scene.getWidth() / baseWidth;
+                    double yScale = scene.getHeight() / baseHeight;
+                    return Math.min(xScale, yScale); // pick the smaller to avoid stretching
+                },
+                scene.widthProperty(),
+                scene.heightProperty()
+        );
+
+        gameBoard.scaleXProperty().bind(scale);
+        gameBoard.scaleYProperty().bind(scale);
+
+        // Optional: keep the board centered in the scene
+        gameBoard.layoutXProperty().bind(
+                scene.widthProperty().subtract(gameBoard.widthProperty()).divide(2)
+        );
     }
 
     public void bindScore(IntegerProperty integerProperty) {

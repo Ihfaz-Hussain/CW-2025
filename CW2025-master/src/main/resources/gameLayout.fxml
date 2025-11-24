@@ -1,52 +1,51 @@
-<?import com.comp2042.GameOverPanel?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.Group?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
-<?import java.net.URL?>
+    <?import com.comp2042.GameOverPanel?>
+    <?import javafx.scene.control.Button?>
+    <?import javafx.scene.control.Label?>
+    <?import javafx.scene.control.ToggleButton?>
+    <?import javafx.scene.Group?>
+    <?import javafx.scene.layout.*?>
+    <?import javafx.scene.text.Text?>
+    <?import java.net.URL?>
 
-        <!--Using anchorpane for easier UI management-->
+    <!--Using anchorpane for easier UI management-->
+    <AnchorPane fx:controller="com.comp2042.GuiController"
+          xmlns:fx="http://javafx.com/fxml">
+        <children>
+        <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
+        <BorderPane styleClass="gameBoard" fx:id="gameBoard">
+            <!--gameboard in center-->
+            <center>
+                <GridPane fx:id="gamePanel" hgap="1" vgap="1"/>
+            </center>
+        </BorderPane>
 
-<AnchorPane fx:controller="com.comp2042.GuiController"
-      xmlns:fx="http://javafx.com/fxml">
-    <children>
-    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
-    <BorderPane styleClass="gameBoard" fx:id="gameBoard">
-        <!--gameboard in center-->
-        <center>
-            <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
-        </center>
-    </BorderPane>
+        <!--Stats in a top right bar, Score, level pause-->
+        <!--score label-->
+        <HBox spacing="20"
+              alignment="CENTER_RIGHT"
+              AnchorPane.topAnchor="10.0"
+              AnchorPane.rightAnchor="10.0">
+        <!--scorelabel-->
+        <Label fx:id = "scoreLabel"
+               text = "Score : 0"
+               styleClass="game-label"/>
+            <!--Level Label-->
+        <Label fx:id = "levelLabel"
+               text = "Level1"
+               styleClass="game-label"/>
+            <Button fx:id="pauseButton"
+                    text="Pause"
+                    onAction="#pauseGame"
+                    styleClass="hud-button"/>
+        </HBox>
 
-    <!--Stats in a top right bar, Score, level pause-->
-    <!--score label-->
-    <HBox spacing="20"
-          alignment="CENTER_RIGHT"
-          AnchorPane.topAnchor="10.0"
-          AnchorPane.rightAnchor="10.0">
-
-    <Label fx:id = "scoreLabel"
-           text = "Score : 0"
-           styleClass="game-label"/>
-    <Label fx:id = "levelLabel"
-           text = "Level1"
-           styleClass="game-label"/>
-
-        <Button fx:id="pauseButton"
-                text="Pause"
-                onAction="#pauseGame"
-                styleClass="hud-button"/>
-    </HBox>
-
-    <Group fx:id="groupNotification" layoutX="14" layoutY="203">
-        <VBox alignment="CENTER">
-            <GameOverPanel fx:id="gameOverPanel"/>
-        </VBox>
-    </Group>
-    </children>
-    <stylesheets>
-        <URL value="@window_style.css"/>
-    </stylesheets>
-</AnchorPane>
+        <Group fx:id="groupNotification" layoutX="14" layoutY="203">
+            <VBox alignment="CENTER">
+                <GameOverPanel fx:id="gameOverPanel"/>
+            </VBox>
+        </Group>
+        </children>
+        <stylesheets>
+            <URL value="@window_style.css"/>
+        </stylesheets>
+    </AnchorPane>

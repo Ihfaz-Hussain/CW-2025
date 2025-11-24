@@ -1,0 +1,77 @@
+/* menu.css */
+
+/* Styling for menu buttons */
+.mainMenu .button,
+.mainMenu .toggle-button {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 20px;
+    -fx-text-fill: white;
+    -fx-background-color: #0066cc;
+    -fx-border-color: #004080;
+    -fx-border-width: 2px;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 14 28;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 2, 2);
+    -fx-cursor: hand;
+}
+
+.mainMenu .button:hover,
+.mainMenu .toggle-button:hover {
+    -fx-background-color: #0088ff;
+}
+
+.mainMenu .button:pressed,
+.mainMenu .toggle-button:pressed,
+.mainMenu .toggle-button:selected {
+    -fx-background-color: #004499;
+    -fx-translate-y: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 3, 0, 1, 1);
+}
+
+/* Themed buttons */
+.mainMenu #playButton {
+    -fx-background-color: #00cc66;
+    -fx-border-color: #00994d;
+}
+.mainMenu #playButton:hover {
+    -fx-background-color: #33dd99;
+}
+.mainMenu #playButton:pressed {
+    -fx-background-color: #008844;
+}
+
+.mainMenu #highScoreButton {
+    -fx-background-color: #ffcc00;
+    -fx-text-fill: #222222;
+    -fx-border-color: #cc9900;
+}
+.mainMenu #highScoreButton:hover {
+    -fx-background-color: #ffd740;
+}
+.mainMenu #highScoreButton:pressed {
+    -fx-background-color: #cc9900;
+}
+
+.mainMenu #exitButton {
+    -fx-background-color: #ff4d4d;
+    -fx-border-color: #cc0000;
+}
+.mainMenu #exitButton:hover {
+    -fx-background-color: #ff7777;
+}
+.mainMenu #exitButton:pressed {
+    -fx-background-color: #cc0000;
+}
+
+.mainMenu #musicToggle {
+    -fx-background-color: #9966ff;
+    -fx-border-color: #6633cc;
+}
+.mainMenu #musicToggle:hover {
+    -fx-background-color: #aa88ff;
+}
+.mainMenu #musicToggle:pressed,
+.mainMenu #musicToggle:selected {
+    -fx-background-color: #6633cc;
+}

@@ -1,0 +1,20 @@
+/* base.css */
+
+/* Global app background */
+.root {
+    -fx-background-image: url("background_image.png");
+}
+
+/* Generic label used in HUD, etc. */
+.game-label {
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-font-family: "Consolas", "Fira Code", monospace;
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 8, 0.8, 0, 0);
+}
+
+/* Utility / generic containers */
+.vbox {
+    -fx-spacing: 12;
+}

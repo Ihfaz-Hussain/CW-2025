@@ -1,0 +1,57 @@
+/* highscore.css */
+
+/* Root container of the highscore window */
+.highscore-root {
+    -fx-background-color: radial-gradient(center 50% 50%, radius 80%, #151515, #050505);
+    -fx-background-radius: 12;
+    -fx-border-color: linear-gradient(#00ffc8, #00aaff);
+    -fx-border-width: 2px;
+    -fx-border-radius: 12;
+}
+
+/* Title text: big, bright, gamer-ish */
+.highscore-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-font-family: "Consolas", "Fira Code", monospace;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 8, 0.8, 0, 0);
+}
+
+/* Each score row */
+.highscore-entry {
+    -fx-text-fill: #00ffc8;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Consolas", "Fira Code", monospace;
+}
+
+/* Message when no scores yet */
+.highscore-empty {
+    -fx-text-fill: #bbbbbb;
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* Back button style */
+.highscore-back-button {
+    -fx-background-color: linear-gradient(#252533, #36364a);
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Consolas", "Fira Code", monospace;
+    -fx-background-radius: 10;
+    -fx-padding: 6 16 6 16;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 4, 0.7, 0, 1);
+    -fx-cursor: hand;
+}
+
+.highscore-back-button:hover {
+    -fx-background-color: linear-gradient(#36364a, #464666);
+}
+
+.highscore-back-button:pressed {
+    -fx-background-color: #181824;
+    -fx-translate-y: 1px;
+}
