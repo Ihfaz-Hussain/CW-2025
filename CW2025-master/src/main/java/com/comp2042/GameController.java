@@ -61,6 +61,35 @@ public class GameController implements InputEventListener {
     }
 
     @Override
+    public DownData onHardDropEvent(MoveEvent event) {
+        ClearRow clearRow = null;
+
+        //move the current brick down until it can't move anymore
+        while (board.moveBrickDown()) {
+            // no-op; board.moveBrickDown() updates currentOffset inside SimpleBoard
+        }
+
+        //Lock the brick into the background and clear completed rows
+        board.mergeBrickToBackground();
+        clearRow = board.clearRows();
+        if (clearRow.getLinesRemoved() > 0) {
+            board.getScore().add(clearRow.getScoreBonus());
+        }
+
+        //Spawn a new brick; if we can't, it's game over
+        if (board.createNewBrick()) {
+            viewGuiController.gameOver();
+        }
+
+        //Refresh the background (so the locked brick + cleared rows are visible)
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+
+        //Return view data for the NEW current brick
+        return new DownData(clearRow, board.getViewData());
+    }
+
+
+    @Override
     public ViewData onLeftEvent(MoveEvent event) {
         board.moveBrickLeft();
         return board.getViewData();
