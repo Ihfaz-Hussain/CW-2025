@@ -25,6 +25,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 import javafx.scene.control.Button;
+import java.util.HashMap;
+import java.util.Map;
+
 
 
 import java.net.URL;
@@ -55,6 +58,8 @@ public class GuiController implements Initializable {
 
     private Rectangle[][] displayMatrix;
 
+    private Map<KeyCode, Runnable> keyActions;
+
     private InputEventListener eventListener;
 
     private Rectangle[][] rectangles;
@@ -65,43 +70,55 @@ public class GuiController implements Initializable {
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
+    private void setupKeyActions() {
+        keyActions = new HashMap<>();
+
+        keyActions.put(KeyCode.LEFT, () ->
+                refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER))));
+        keyActions.put(KeyCode.A, keyActions.get(KeyCode.LEFT));
+
+        keyActions.put(KeyCode.RIGHT, () ->
+                refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER))));
+        keyActions.put(KeyCode.D, keyActions.get(KeyCode.RIGHT));
+
+        keyActions.put(KeyCode.UP, () ->
+                refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER))));
+        keyActions.put(KeyCode.W, keyActions.get(KeyCode.UP));
+
+        keyActions.put(KeyCode.DOWN, () ->
+                moveDown(new MoveEvent(EventType.DOWN, EventSource.USER)));
+        keyActions.put(KeyCode.S, keyActions.get(KeyCode.DOWN));
+
+        keyActions.put(KeyCode.SPACE, () ->
+                hardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER)));
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
+        Font.loadFont(
+                getClass().getClassLoader().getResource("digital.ttf").toExternalForm(),
+                38
+        );
+
+        // Build the key → action map once
+        setupKeyActions();
+
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
-        gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
-                    if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
-                        refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
-                        refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
-                        refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
-                        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.SPACE) {
-                        hardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
-                        keyEvent.consume();
-                    }
-                }
-                /* Redundant code
-                if (keyEvent.getCode() == KeyCode.N) {
-                    newGame(null);
-                }
-                 */
+
+        // Single, clean key handler
+        gamePanel.setOnKeyPressed(event -> {
+            if (isPause.getValue() || isGameOver.getValue()) {
+                return;
+            }
+
+            Runnable action = keyActions.get(event.getCode());
+            if (action != null) {
+                action.run();
+                event.consume();
             }
         });
+
         gameOverPanel.setVisible(false);
 
         final Reflection reflection = new Reflection();
@@ -109,6 +126,7 @@ public class GuiController implements Initializable {
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
     }
+
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
@@ -236,7 +254,7 @@ public class GuiController implements Initializable {
     }
 
     public void bindToScene(Scene scene) {
-        // "Base" size you designed for (your old Scene size)
+        // "Base" size
         double baseWidth = 300.0;
         double baseHeight = 510.0;
 
@@ -254,7 +272,7 @@ public class GuiController implements Initializable {
         gameBoard.scaleXProperty().bind(scale);
         gameBoard.scaleYProperty().bind(scale);
 
-        // Optional: keep the board centered in the scene
+        //Board centered to the screen
         gameBoard.layoutXProperty().bind(
                 scene.widthProperty().subtract(gameBoard.widthProperty()).divide(2)
         );
