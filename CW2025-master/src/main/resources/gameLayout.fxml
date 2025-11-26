@@ -1,51 +1,72 @@
-    <?import com.comp2042.GameOverPanel?>
-    <?import javafx.scene.control.Button?>
-    <?import javafx.scene.control.Label?>
-    <?import javafx.scene.control.ToggleButton?>
-    <?import javafx.scene.Group?>
-    <?import javafx.scene.layout.*?>
-    <?import javafx.scene.text.Text?>
-    <?import java.net.URL?>
+<?import com.comp2042.GameOverPanel?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-    <!--Using anchorpane for easier UI management-->
-    <AnchorPane fx:controller="com.comp2042.GuiController"
-          xmlns:fx="http://javafx.com/fxml">
-        <children>
-        <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
-        <BorderPane styleClass="gameBoard" fx:id="gameBoard">
-            <!--gameboard in center-->
+<AnchorPane fx:controller="com.comp2042.GuiController"
+            xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@window_style.css">
+    <children>
+        <BorderPane fx:id="gameBoard"
+                    styleClass="gameBoard"
+                    AnchorPane.leftAnchor="24.0"
+                    AnchorPane.rightAnchor="280.0"
+                    AnchorPane.topAnchor="24.0"
+                    AnchorPane.bottomAnchor="24.0">
             <center>
                 <GridPane fx:id="gamePanel" hgap="1" vgap="1"/>
+                <StackPane>
+                    <GridPane fx:id="gamePanel" hgap="1" vgap="1"/>
+                    <GridPane fx:id="brickPanel" hgap="1" vgap="1"/>
+                </StackPane>
             </center>
+            <top>
+                <HBox spacing="16" alignment="CENTER_LEFT" styleClass="hud-banner" AnchorPane.topAnchor="10.0" AnchorPane.rightAnchor="10.0">
+                    <Label fx:id="scoreLabel" text="Score: 0" styleClass="game-label"/>
+                    <Label fx:id="levelLabel" text="Level: 1" styleClass="game-label"/>
+                    <Label fx:id="linesLabel" text="Lines: 0" styleClass="game-label"/>
+                </HBox>
+            </top>
         </BorderPane>
 
         <!--Stats in a top right bar, Score, level pause-->
         <!--score label-->
-        <HBox spacing="20"
-              alignment="CENTER_RIGHT"
-              AnchorPane.topAnchor="10.0"
-              AnchorPane.rightAnchor="10.0">
-        <!--scorelabel-->
-        <Label fx:id = "scoreLabel"
-               text = "Score : 0"
-               styleClass="game-label"/>
-            <!--Level Label-->
-        <Label fx:id = "levelLabel"
-               text = "Level1"
-               styleClass="game-label"/>
-            <Button fx:id="pauseButton"
-                    text="Pause"
-                    onAction="#pauseGame"
-                    styleClass="hud-button"/>
-        </HBox>
+        <VBox spacing="18" alignment="TOP_CENTER"
+              AnchorPane.rightAnchor="28.0" AnchorPane.topAnchor="30.0" AnchorPane.bottomAnchor="30.0"
+              styleClass="hud-card">
+            <Label text="TETRIS NEO" styleClass="hud-title"/>
+            <Button fx:id="pauseButton" text="Pause" onAction="#pauseGame" styleClass="hud-button"/>
 
-        <Group fx:id="groupNotification" layoutX="14" layoutY="203">
+            <Separator/>
+            <Label text="NEXT" styleClass="hud-subtitle"/>
+            <GridPane fx:id="nextPiecePanel" hgap="4" vgap="4" styleClass="preview-grid"/>
+
+            <Label text="HOLD" styleClass="hud-subtitle"/>
+            <GridPane fx:id="holdPiecePanel" hgap="4" vgap="4" styleClass="preview-grid"/>
+
+            <Separator/>
+            <VBox spacing="6" alignment="CENTER_LEFT" styleClass="controls-box">
+                <Label text="Controls" styleClass="hud-subtitle"/>
+                <Label text="Move: Arrow Keys / A D" styleClass="helpInfo"/>
+                <Label text="Rotate: W / ↑" styleClass="helpInfo"/>
+                <Label text="Hard drop: Space" styleClass="helpInfo"/>
+                <Label text="Hold: Shift / C" styleClass="helpInfo"/>
+                <Label text="Pause: Button" styleClass="helpInfo"/>
+            </VBox>
+        </VBox>
+
+        <Group fx:id="groupNotification" layoutX="14.0" layoutY="203.0">
             <VBox alignment="CENTER">
                 <GameOverPanel fx:id="gameOverPanel"/>
             </VBox>
         </Group>
-        </children>
-        <stylesheets>
-            <URL value="@window_style.css"/>
-        </stylesheets>
-    </AnchorPane>
+    </children>
+
+</AnchorPane>
