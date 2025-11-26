@@ -25,7 +25,7 @@ public class MenuController {
     @FXML
     private void onPlayClicked(ActionEvent event) throws Exception {
         //try to load file safely from resources
-        var location = getClass().getClassLoader().getResource("gamelayout.fxml");
+        var location = getClass().getClassLoader().getResource("gameLayout.fxml");
         if(location == null){
             throw new IllegalStateException("fxml not found");
         }
@@ -40,7 +40,7 @@ public class MenuController {
         new GameController(guiController);
 
         Stage stage = (Stage) playButton.getScene().getWindow();
-        Scene gameScene = new Scene(root, 300, 510);
+        Scene gameScene = new Scene(root, 720, 660);
         stage.setScene(gameScene);
         stage.setTitle("TetrisJFX - Game");
         stage.show();

@@ -22,5 +22,7 @@ public interface Board {
 
     Score getScore();
 
+    ViewData holdBrick();
+
     void newGame();
 }

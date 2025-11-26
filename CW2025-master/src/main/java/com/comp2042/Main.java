@@ -29,7 +29,7 @@ public class Main extends Application {
         primaryStage.setTitle("TetrisJFX - Menu");
 
         // Create a Scene that holds the FXML layout
-        Scene scene = new Scene(root, 300, 510);
+        Scene scene = new Scene(root, 420, 640);
 
         // Step 4. Attach the Scene to the Stage (window)
         primaryStage.setScene(scene);
