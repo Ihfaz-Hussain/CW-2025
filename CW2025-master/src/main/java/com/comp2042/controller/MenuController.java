@@ -1,4 +1,7 @@
-package com.comp2042;
+package com.comp2042.controller;
+import com.comp2042.view.GuiController;
+import com.comp2042.model.HighScoreManager;
+import com.comp2042.audio.AudioManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

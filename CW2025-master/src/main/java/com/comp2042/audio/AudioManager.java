@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.audio;
 
 import javax.sound.sampled.*;
 import java.io.IOException;

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      alignment="CENTER"
+      spacing="20"
+      styleClass="pause-menu-container">
+
+    <Label text="PAUSED" styleClass="pause-menu-title"/>
+
+    <Button fx:id="resumeButton"
+            text="Resume Game"
+            styleClass="pause-menu-button"
+            onAction="#onResumeClicked"/>
+
+    <Button fx:id="restartButton"
+            text="Restart Game"
+            styleClass="pause-menu-button"
+            onAction="#onRestartClicked"/>
+
+    <ToggleButton fx:id="musicToggle"
+                  text="Music: ON"
+                  styleClass="pause-menu-button"
+                  onAction="#onMusicToggle"/>
+
+    <Button fx:id="mainMenuButton"
+            text="Main Menu"
+            styleClass="pause-menu-button"
+            onAction="#onMainMenuClicked"/>
+
+    <stylesheets>
+        <URL value="@pausemenu.css"/>
+    </stylesheets>
+</VBox>

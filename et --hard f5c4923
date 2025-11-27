@@ -1,0 +1,26 @@
+[33m729f920[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/hud-sidescreen[m[33m, [m[1;31morigin/feature/hud-sidescreen[m[33m)[m Fixing gamelogic
+[33m93a301e[m Styling change
+[33m50cfbce[m UI fixes + Sidebar Implenmentation
+[33m9613710[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m Fixing UI errors
+[33mfe980e7[m Merge pull request - refactoring key mapping
+[33ma1f4f82[m[33m ([m[1;31morigin/refactor-input-handler[m[33m, [m[1;32mrefactor-input-handler[m[33m)[m Refactor input handler using key action map
+[33mf5c4923[m[33m ([m[1;32mhard-drop[m[33m)[m Add hard drop feature
+[33mbf02f6e[m CSS refactoring
+[33m502b19b[m List based highscore implementation
+[33ma31a517[m High score implementation
+[33mf35f56d[m highscore and level styling
+[33mc099a41[m Added level system
+[33maa4c70e[m Button style implementation
+[33mfc175b1[m Score counting feature
+[33m3fca98c[m Background Music Addition
+[33maa96aa4[m Music Fix
+[33m2691e67[m Music Implementation
+[33m43997c9[m pause menu implementation
+[33m64a44dc[m Fixing game over height
+[33mb8d9b41[m Menu driven interface fixed
+[33m6f3042c[m Menu Controller Connection to GUI
+[33mb4378fb[m Debugged Main Class
+[33md25f9a7[m Fixed refactoring of FXML file
+[33mad66e16[m Added FXML File
+[33mcf9a338[m Added meun interface
+[33med649c9[m Initial commit - Tetris base project
