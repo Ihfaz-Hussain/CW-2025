@@ -15,11 +15,11 @@ public class MatrixOperations {
     }
 
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
-        for (int i = 0; i < brick.length; i++) {
-            for (int j = 0; j < brick[i].length; j++) {
-                int targetX = x + i;
-                int targetY = y + j;
-                if (brick[j][i] != 0 && (checkOutOfBound(matrix, targetX, targetY) || matrix[targetY][targetX] != 0)) {
+        for (int row = 0; row < brick.length; row++) {
+            for (int col = 0; col < brick[row].length; col++) {
+                int targetX = x + col;
+                int targetY = y + row;
+                if (brick[row][col] != 0 && (checkOutOfBound(matrix, targetX, targetY) || matrix[targetY][targetX] != 0)) {
                     return true;
                 }
             }
@@ -29,7 +29,7 @@ public class MatrixOperations {
 
     private static boolean checkOutOfBound(int[][] matrix, int targetX, int targetY) {
         boolean returnValue = true;
-        if (targetX >= 0 && targetY < matrix.length && targetX < matrix[targetY].length) {
+        if (targetX >= 0 && targetY >= 0 && targetY < matrix.length && targetX < matrix[targetY].length) {
             returnValue = false;
         }
         return returnValue;
@@ -48,17 +48,18 @@ public class MatrixOperations {
 
     public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) {
         int[][] copy = copy(filledFields);
-        for (int i = 0; i < brick.length; i++) {
-            for (int j = 0; j < brick[i].length; j++) {
-                int targetX = x + i;
-                int targetY = y + j;
-                if (brick[j][i] != 0) {
-                    copy[targetY][targetX] = brick[j][i];
+        for (int row = 0; row < brick.length; row++) {
+            for (int col = 0; col < brick[row].length; col++) {
+                int targetX = x + col;
+                int targetY = y + row;
+                if (brick[row][col] != 0) {
+                    copy[targetY][targetX] = brick[row][col];
                 }
             }
         }
         return copy;
     }
+
 
     public static ClearRow checkRemoving(final int[][] matrix) {
         int[][] tmp = new int[matrix.length][matrix[0].length];
