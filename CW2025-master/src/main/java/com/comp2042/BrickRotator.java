@@ -27,4 +27,7 @@ public class BrickRotator {
     }
 
 
+    public Brick getBrick() {
+        return brick;
+    }
 }

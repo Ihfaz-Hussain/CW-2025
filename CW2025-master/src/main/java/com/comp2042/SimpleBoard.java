@@ -87,8 +87,11 @@ public class SimpleBoard implements Board {
     public boolean createNewBrick() {
         //generate new brick
         holdUsedThisTurn = false; // allow hold again on the fresh brick
+        // Pull the next brick from the generator and make it active
+        brickRotator.setBrick(brickGenerator.getBrick());
         currentOffset = new Point(4,0 );
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
+
     }
 
     private boolean spawnBrick(Brick brick) {
