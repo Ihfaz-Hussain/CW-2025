@@ -1,8 +1,11 @@
 /* base.css */
 
-/* Global app background */
+
 .root {
+    -fx-background-color: linear-gradient(#020617, #020617 40%, #020b26 100%);
     -fx-background-image: url("background_image.png");
+    -fx-background-size: cover;
+    -fx-background-position: center;
 }
 
 /* Generic label used in HUD, etc. */

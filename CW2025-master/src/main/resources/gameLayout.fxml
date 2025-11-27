@@ -1,4 +1,4 @@
-    <?import com.comp2042.GameOverPanel?>
+    <?import com.comp2042.view.GameOverPanel?>
     <?import javafx.scene.control.Button?>
     <?import javafx.scene.control.Label?>
     <?import javafx.scene.control.ToggleButton?>
@@ -8,7 +8,7 @@
     <?import java.net.URL?>
 
     <!--Using anchorpane for easier UI management-->
-    <AnchorPane fx:controller="com.comp2042.GuiController"
+    <AnchorPane fx:controller="com.comp2042.view.GuiController"
           xmlns:fx="http://javafx.com/fxml">
         <children>
         <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>

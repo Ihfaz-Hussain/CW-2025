@@ -1,4 +1,10 @@
-package com.comp2042;
+package com.comp2042.controller;
+
+import com.comp2042.view.GuiController;
+import com.comp2042.model.HighScoreManager;
+import com.comp2042.event.InputEventListener;
+import com.comp2042.event.MoveEvent;
+import com.comp2042.model.*;
 
 public class GameController implements InputEventListener {
 

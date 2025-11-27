@@ -1,5 +1,7 @@
-package com.comp2042;
+package com.comp2042.model;
 
+import com.comp2042.logic.BrickRotator;
+import com.comp2042.logic.MatrixOperations;
 import com.comp2042.logic.bricks.Brick;
 import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.logic.bricks.RandomBrickGenerator;

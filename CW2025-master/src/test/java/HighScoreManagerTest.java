@@ -1,4 +1,4 @@
-import com.comp2042.HighScoreManager;
+import com.comp2042.model.HighScoreManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 

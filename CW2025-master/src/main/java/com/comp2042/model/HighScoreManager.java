@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.model;
 
 import java.io.IOException;
 import java.nio.file.Files;
