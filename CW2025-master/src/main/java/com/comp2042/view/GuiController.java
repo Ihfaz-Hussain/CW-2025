@@ -14,7 +14,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -22,7 +21,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -56,6 +54,10 @@ public class GuiController implements Initializable {
     private Label scoreLabel;
     @FXML
     private Label levelLabel;
+    @FXML
+    private GridPane nextPiecePanel;
+    @FXML
+    private GridPane holdPiecePanel;
 
     @FXML
     private BorderPane gameBoard;
@@ -69,6 +71,10 @@ public class GuiController implements Initializable {
     private InputEventListener eventListener;
 
     private Rectangle[][] rectangles;
+
+    private Rectangle[][] nextPieceRectangles;
+
+    private Rectangle[][] holdPieceRectangles;
 
     private Timeline timeLine;
 
@@ -95,6 +101,10 @@ public class GuiController implements Initializable {
         keyActions.put(KeyCode.S, keyActions.get(KeyCode.DOWN));
 
         keyActions.put(KeyCode.SPACE, () -> hardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER)));
+
+        keyActions.put(KeyCode.SHIFT,
+                () -> refreshBrick(eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER))));
+        keyActions.put(KeyCode.C, keyActions.get(KeyCode.SHIFT));
     }
 
     @Override
@@ -135,6 +145,19 @@ public class GuiController implements Initializable {
         // Create rectangle grid for the visible rows (board rows 2..end)
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
 
+        int visibleRows = boardMatrix.length - HIDDEN_ROWS;
+        int columns = boardMatrix[0].length;
+
+        // Set explicit size for gamePanel to eliminate padding
+        double prefWidth = columns * (BRICK_SIZE + gamePanel.getHgap());
+        double prefHeight = visibleRows * (BRICK_SIZE + gamePanel.getVgap());
+        gamePanel.setPrefWidth(prefWidth);
+        gamePanel.setPrefHeight(prefHeight);
+        gamePanel.setMinWidth(prefWidth);
+        gamePanel.setMinHeight(prefHeight);
+        gamePanel.setMaxWidth(prefWidth);
+        gamePanel.setMaxHeight(prefHeight);
+
         for (int row = HIDDEN_ROWS; row < boardMatrix.length; row++) {
             for (int col = 0; col < boardMatrix[row].length; col++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
@@ -171,6 +194,13 @@ public class GuiController implements Initializable {
 
         gamePanel.layoutXProperty().addListener((obs, oldVal, newVal) -> updateBrickPanelPosition(currentViewData));
         gamePanel.layoutYProperty().addListener((obs, oldVal, newVal) -> updateBrickPanelPosition(currentViewData));
+
+        // Initialize preview panels (4x4 grid for max tetromino size)
+        initializePreviewPanel(nextPiecePanel, 4, 4);
+        initializePreviewPanel(holdPiecePanel, 4, 4);
+
+        // Update preview panels with initial data
+        updatePreviewPanels(brick);
 
         // Start the falling timer
         timeLine = new Timeline(new KeyFrame(
@@ -243,6 +273,85 @@ public class GuiController implements Initializable {
 
         // and move it to the correct place over the main rectangle
         updateBrickPanelPosition(brick);
+
+        // Update preview panels
+        updatePreviewPanels(brick);
+    }
+
+    private void initializePreviewPanel(GridPane panel, int rows, int cols) {
+        if (panel == null)
+            return;
+
+        panel.getChildren().clear();
+        Rectangle[][] previewRectangles = new Rectangle[rows][cols];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                Rectangle rect = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                rect.setFill(Color.TRANSPARENT);
+                rect.setArcHeight(9);
+                rect.setArcWidth(9);
+                previewRectangles[i][j] = rect;
+                panel.add(rect, j, i);
+            }
+        }
+
+        // Store the rectangles for later updates
+        if (panel == nextPiecePanel) {
+            nextPieceRectangles = previewRectangles;
+        } else if (panel == holdPiecePanel) {
+            holdPieceRectangles = previewRectangles;
+        }
+    }
+
+    private void updatePreviewPanels(ViewData viewData) {
+        if (viewData == null)
+            return;
+
+        // Update next piece preview
+        int[][] nextBrickData = viewData.getNextBrickData();
+        if (nextBrickData != null && nextPieceRectangles != null) {
+            updatePreviewPanel(nextPieceRectangles, nextBrickData);
+        }
+
+        // Update hold piece preview
+        int[][] holdBrickData = viewData.getHoldBrickData();
+        if (holdBrickData != null && holdPieceRectangles != null) {
+            updatePreviewPanel(holdPieceRectangles, holdBrickData);
+        } else if (holdPieceRectangles != null) {
+            // Clear hold panel if no piece is held
+            clearPreviewPanel(holdPieceRectangles);
+        }
+    }
+
+    private void updatePreviewPanel(Rectangle[][] previewRectangles, int[][] brickData) {
+        // Clear all rectangles first
+        clearPreviewPanel(previewRectangles);
+
+        if (brickData == null)
+            return;
+
+        // Center the piece in the 4x4 grid
+        int offsetRow = (4 - brickData.length) / 2;
+        int offsetCol = (4 - brickData[0].length) / 2;
+
+        for (int i = 0; i < brickData.length; i++) {
+            for (int j = 0; j < brickData[i].length; j++) {
+                int targetRow = i + offsetRow;
+                int targetCol = j + offsetCol;
+                if (targetRow >= 0 && targetRow < 4 && targetCol >= 0 && targetCol < 4) {
+                    previewRectangles[targetRow][targetCol].setFill(getFillColor(brickData[i][j]));
+                }
+            }
+        }
+    }
+
+    private void clearPreviewPanel(Rectangle[][] previewRectangles) {
+        for (int i = 0; i < previewRectangles.length; i++) {
+            for (int j = 0; j < previewRectangles[i].length; j++) {
+                previewRectangles[i][j].setFill(Color.TRANSPARENT);
+            }
+        }
     }
 
     public void refreshGameBackground(int[][] board) {

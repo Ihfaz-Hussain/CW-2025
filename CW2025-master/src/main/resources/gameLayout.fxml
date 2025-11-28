@@ -22,10 +22,10 @@
         <HBox spacing="24"
               alignment="CENTER"
               StackPane.alignment="CENTER"
-              AnchorPane.topAnchor="24.0"
-              AnchorPane.rightAnchor="24.0"
-              AnchorPane.bottomAnchor="24.0"
-              AnchorPane.leftAnchor="24.0">
+              AnchorPane.topAnchor="0.0"
+              AnchorPane.rightAnchor="0.0"
+              AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0">
         <BorderPane fx:id="gameBoard"
                     styleClass="gameBoard">
             <center>
@@ -49,6 +49,7 @@
               styleClass="hud-card">
             <Label text="TETRIS" styleClass="hud-title"/>
             <Button fx:id="pauseButton" text="Pause" onAction="#pauseGame" styleClass="hud-button"/>
+
 
             <Separator/>
             <Label text="NEXT" styleClass="hud-subtitle"/>
