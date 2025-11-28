@@ -11,7 +11,7 @@
         -fx-padding: 12px;
 }
 
-.hud-Banner{
+.hud-banner{
     -fx-padding: 8 14 10 14;
     -fx-background-color: rgba(255,255,255,0.06);
     -fx-background-radius: 12px;

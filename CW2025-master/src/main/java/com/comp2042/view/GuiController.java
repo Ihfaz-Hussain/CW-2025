@@ -293,9 +293,9 @@ public class GuiController implements Initializable {
     }
 
     public void bindToScene(Scene scene) {
-        // "Base" size
-        double baseWidth = 300.0;
-        double baseHeight = 510.0;
+        // "Base" size (match the playfield's preferred dimensions)
+        double baseWidth = gameBoard.getPrefWidth() > 0 ? gameBoard.getPrefWidth() : 300.0;
+        double baseHeight = gameBoard.getPrefHeight() > 0 ? gameBoard.getPrefHeight() : 510.0;
 
         // Compute a scale factor that keeps aspect ratio
         DoubleBinding scale = Bindings.createDoubleBinding(
@@ -309,10 +309,6 @@ public class GuiController implements Initializable {
 
         gameBoard.scaleXProperty().bind(scale);
         gameBoard.scaleYProperty().bind(scale);
-
-        // Board centered to the screen
-        gameBoard.layoutXProperty().bind(
-                scene.widthProperty().subtract(gameBoard.widthProperty()).divide(2));
     }
 
     public void bindScore(IntegerProperty integerProperty) {
