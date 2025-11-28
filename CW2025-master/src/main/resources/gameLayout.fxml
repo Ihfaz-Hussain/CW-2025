@@ -19,62 +19,70 @@
                    AnchorPane.rightAnchor="0.0"
                    AnchorPane.bottomAnchor="0.0"
                    AnchorPane.leftAnchor="0.0">
-        <HBox spacing="24"
+        <HBox spacing="20"
               alignment="CENTER"
               StackPane.alignment="CENTER"
-              AnchorPane.topAnchor="0.0"
-              AnchorPane.rightAnchor="0.0"
-              AnchorPane.bottomAnchor="0.0"
-              AnchorPane.leftAnchor="0.0">
-        <BorderPane fx:id="gameBoard"
-                    styleClass="gameBoard">
-            <center>
-                <StackPane alignment="CENTER">
-                    <GridPane fx:id="gamePanel" hgap="1" vgap="1"/>
-                    <GridPane fx:id="brickPanel" hgap="1" vgap="1"/>
-                </StackPane>
-            </center>
-            <top>
-                <HBox spacing="16" alignment="CENTER_LEFT" styleClass="hud-banner">
-                    <Label fx:id="scoreLabel" text="Score: 0" styleClass="game-label"/>
-                    <Label fx:id="levelLabel" text="Level: 1" styleClass="game-label"/>
-                    <Label fx:id="linesLabel" text="Lines: 0" styleClass="game-label"/>
-                </HBox>
-            </top>
-        </BorderPane>
+              AnchorPane.topAnchor="20.0"
+              AnchorPane.rightAnchor="20.0"
+              AnchorPane.bottomAnchor="20.0"
+              AnchorPane.leftAnchor="20.0">
+        <VBox spacing="8" alignment="CENTER">
+            <HBox spacing="12" alignment="CENTER" styleClass="hud-banner">
+                <Label fx:id="scoreLabel" text="Score: 0" styleClass="game-label"/>
+                <Label fx:id="levelLabel" text="Level: 1" styleClass="game-label"/>
+                <Label fx:id="linesLabel" text="Lines: 0" styleClass="game-label"/>
+            </HBox>
+            <BorderPane fx:id="gameBoard" styleClass="gameBoard">
+                <center>
+                    <StackPane alignment="TOP_LEFT">
+                        <GridPane fx:id="gamePanel" hgap="1" vgap="1"/>
+                        <GridPane fx:id="brickPanel" hgap="1" vgap="1" managed="false"/>
+                    </StackPane>
+                </center>
+            </BorderPane>
+        </VBox>
 
         <!--Stats in a top right bar, Score, level pause-->
         <!--score label-->
-        <VBox spacing="18" alignment="TOP_CENTER"
-              styleClass="hud-card">
-            <Label text="TETRIS" styleClass="hud-title"/>
+        <VBox spacing="6" alignment="TOP_CENTER"
+              styleClass="hud-card"
+              HBox.hgrow="ALWAYS"
+              maxWidth="Infinity">
+            <Label text="TETRIS" styleClass="hud-title" alignment="CENTER"/>
             <Button fx:id="pauseButton" text="Pause" onAction="#pauseGame" styleClass="hud-button"/>
-
-
-            <Separator/>
-            <Label text="NEXT" styleClass="hud-subtitle"/>
-            <GridPane fx:id="nextPiecePanel" hgap="4" vgap="4" styleClass="preview-grid"/>
-
-            <Label text="HOLD" styleClass="hud-subtitle"/>
-            <GridPane fx:id="holdPiecePanel" hgap="4" vgap="4" styleClass="preview-grid"/>
+            <Button fx:id="musicButton" text="Music: ON" onAction="#toggleMusic" styleClass="hud-button"/>
+            <Button fx:id="menuButton" text="Main Menu" onAction="#returnToMenu" styleClass="hud-button"/>
+            <Button fx:id="restartButton" text="Restart" onAction="#restartGame" styleClass="hud-button"/>
 
             <Separator/>
-            <VBox spacing="6" alignment="CENTER_LEFT" styleClass="controls-box">
-                <Label text="Controls" styleClass="hud-subtitle"/>
-                <Label text="Move: Arrow Keys / A D" styleClass="helpInfo"/>
-                <Label text="Rotate: W / ↑" styleClass="helpInfo"/>
-                <Label text="Hard drop: Space" styleClass="helpInfo"/>
-                <Label text="Hold: Shift / C" styleClass="helpInfo"/>
-                <Label text="Pause: Button" styleClass="helpInfo"/>
+            <Label text="NEXT" styleClass="hud-subtitle" alignment="CENTER"/>
+            <GridPane fx:id="nextPiecePanel" hgap="2" vgap="2" styleClass="preview-grid" alignment="CENTER"/>
+
+            <Label text="HOLD" styleClass="hud-subtitle" alignment="CENTER"/>
+            <GridPane fx:id="holdPiecePanel" hgap="2" vgap="2" styleClass="preview-grid" alignment="CENTER"/>
+
+            <Separator/>
+            <VBox spacing="2" alignment="CENTER" styleClass="controls-box">
+                <Label text="Controls" styleClass="hud-subtitle" alignment="CENTER"/>
+                <Label text="Move: ← → / A D" styleClass="helpInfo" alignment="CENTER"/>
+                <Label text="Rotate: ↑ / W" styleClass="helpInfo" alignment="CENTER"/>
+                <Label text="Drop: Space" styleClass="helpInfo" alignment="CENTER"/>
+                <Label text="Hold: Shift / C" styleClass="helpInfo" alignment="CENTER"/>
             </VBox>
         </VBox>
         </HBox>
 
-        <Group fx:id="groupNotification" layoutX="14.0" layoutY="203.0">
-            <VBox alignment="CENTER">
-                <GameOverPanel fx:id="gameOverPanel"/>
-            </VBox>
-        </Group>
+        <StackPane alignment="CENTER" mouseTransparent="true"
+                   AnchorPane.topAnchor="20.0"
+                   AnchorPane.rightAnchor="20.0"
+                   AnchorPane.bottomAnchor="20.0"
+                   AnchorPane.leftAnchor="20.0">
+            <Group fx:id="groupNotification">
+                <VBox alignment="CENTER">
+                    <GameOverPanel fx:id="gameOverPanel"/>
+                </VBox>
+            </Group>
+        </StackPane>
         </StackPane>
     </children>
 

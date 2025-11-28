@@ -1,5 +1,6 @@
 package com.comp2042.view;
 
+import com.comp2042.audio.AudioManager;
 import com.comp2042.event.EventSource;
 import com.comp2042.event.EventType;
 import com.comp2042.event.InputEventListener;
@@ -15,7 +16,10 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -37,11 +41,18 @@ import java.util.ResourceBundle;
 
 public class GuiController implements Initializable {
 
-    private static final int BRICK_SIZE = 20;
+    private static final int BRICK_SIZE = 30;
+    private static final int BRICK_WIDTH = 33;
     private static final int HIDDEN_ROWS = 2; // rows at the top we don’t show
 
     @FXML
     private Button pauseButton;
+    @FXML
+    private Button musicButton;
+    @FXML
+    private Button menuButton;
+    @FXML
+    private Button restartButton;
     @FXML
     private GridPane gamePanel;
     @FXML
@@ -134,6 +145,11 @@ public class GuiController implements Initializable {
 
         gameOverPanel.setVisible(false);
 
+        // Sync music button text with current audio state
+        if (musicButton != null) {
+            musicButton.setText(AudioManager.isPlaying() ? "Music: ON" : "Music: OFF");
+        }
+
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
@@ -148,19 +164,26 @@ public class GuiController implements Initializable {
         int visibleRows = boardMatrix.length - HIDDEN_ROWS;
         int columns = boardMatrix[0].length;
 
-        // Set explicit size for gamePanel to eliminate padding
-        double prefWidth = columns * (BRICK_SIZE + gamePanel.getHgap());
-        double prefHeight = visibleRows * (BRICK_SIZE + gamePanel.getVgap());
+        // Set explicit size for gamePanel to eliminate padding/deadzone
+        // Gaps only exist between cells, not after the last cell
+        double prefWidth = columns * BRICK_WIDTH + (columns - 1) * gamePanel.getHgap();
+        double prefHeight = visibleRows * BRICK_SIZE + (visibleRows - 1) * gamePanel.getVgap();
         gamePanel.setPrefWidth(prefWidth);
         gamePanel.setPrefHeight(prefHeight);
         gamePanel.setMinWidth(prefWidth);
         gamePanel.setMinHeight(prefHeight);
         gamePanel.setMaxWidth(prefWidth);
         gamePanel.setMaxHeight(prefHeight);
+        
+        // Also constrain the gameBoard BorderPane to match the game grid size
+        gameBoard.setPrefWidth(prefWidth);
+        gameBoard.setPrefHeight(prefHeight);
+        gameBoard.setMaxWidth(prefWidth);
+        gameBoard.setMaxHeight(prefHeight);
 
         for (int row = HIDDEN_ROWS; row < boardMatrix.length; row++) {
             for (int col = 0; col < boardMatrix[row].length; col++) {
-                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                Rectangle rectangle = new Rectangle(BRICK_WIDTH, BRICK_SIZE);
                 rectangle.setFill(Color.TRANSPARENT);
                 rectangle.setArcHeight(9);
                 rectangle.setArcWidth(9);
@@ -179,7 +202,7 @@ public class GuiController implements Initializable {
 
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                Rectangle rectangle = new Rectangle(BRICK_WIDTH, BRICK_SIZE);
                 rectangle.setFill(getFillColor(brick.getBrickData()[i][j]));
                 rectangle.setArcHeight(9);
                 rectangle.setArcWidth(9);
@@ -215,7 +238,7 @@ public class GuiController implements Initializable {
             return;
         }
 
-        double cellWidth = BRICK_SIZE + brickPanel.getHgap();
+        double cellWidth = BRICK_WIDTH + brickPanel.getHgap();
         double cellHeight = BRICK_SIZE + brickPanel.getVgap();
 
         // x is straightforward: column index
@@ -287,7 +310,7 @@ public class GuiController implements Initializable {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                Rectangle rect = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                Rectangle rect = new Rectangle(BRICK_WIDTH, BRICK_SIZE);
                 rect.setFill(Color.TRANSPARENT);
                 rect.setArcHeight(9);
                 rect.setArcWidth(9);
@@ -355,7 +378,7 @@ public class GuiController implements Initializable {
     }
 
     public void refreshGameBackground(int[][] board) {
-        for (int i = 2; i < board.length; i++) {
+        for (int i = HIDDEN_ROWS; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 setRectangleData(board[i][j], displayMatrix[i][j]);
             }
@@ -402,22 +425,33 @@ public class GuiController implements Initializable {
     }
 
     public void bindToScene(Scene scene) {
-        // "Base" size (match the playfield's preferred dimensions)
-        double baseWidth = gameBoard.getPrefWidth() > 0 ? gameBoard.getPrefWidth() : 300.0;
-        double baseHeight = gameBoard.getPrefHeight() > 0 ? gameBoard.getPrefHeight() : 510.0;
-
-        // Compute a scale factor that keeps aspect ratio
-        DoubleBinding scale = Bindings.createDoubleBinding(
-                () -> {
-                    double xScale = scene.getWidth() / baseWidth;
-                    double yScale = scene.getHeight() / baseHeight;
-                    return Math.min(xScale, yScale); // pick the smaller to avoid stretching
-                },
-                scene.widthProperty(),
-                scene.heightProperty());
-
-        gameBoard.scaleXProperty().bind(scale);
-        gameBoard.scaleYProperty().bind(scale);
+        // Make game board responsive to window size using CSS scaling
+        DoubleBinding scaleBinding = Bindings.createDoubleBinding(() -> {
+            // Calculate scale factor based on window dimensions
+            double baseWidth = 800;
+            double baseHeight = 780;
+            double currentWidth = scene.getWidth();
+            double currentHeight = scene.getHeight();
+            
+            // Calculate scale factors
+            double widthScale = currentWidth / baseWidth;
+            double heightScale = currentHeight / baseHeight;
+            
+            // Use the smaller scale to maintain aspect ratio
+            return Math.min(widthScale, heightScale);
+        }, scene.widthProperty(), scene.heightProperty());
+        
+        // Apply scale to game board
+        scaleBinding.addListener((obs, oldVal, newVal) -> {
+            double scale = newVal.doubleValue();
+            // Apply scale transform to game board
+            gameBoard.setScaleX(scale);
+            gameBoard.setScaleY(scale);
+        });
+        
+        // Initial scale
+        gameBoard.setScaleX(scaleBinding.get());
+        gameBoard.setScaleY(scaleBinding.get());
     }
 
     public void bindScore(IntegerProperty integerProperty) {
@@ -510,6 +544,72 @@ public class GuiController implements Initializable {
         }
 
         // Keep keyboard focus on the game panel
+        gamePanel.requestFocus();
+    }
+
+    public void toggleMusic(ActionEvent actionEvent) {
+        if (AudioManager.isPlaying()) {
+            AudioManager.pauseBackground();
+            if (musicButton != null) {
+                musicButton.setText("Music: OFF");
+            }
+        } else {
+            AudioManager.playBackground();
+            if (musicButton != null) {
+                musicButton.setText("Music: ON");
+            }
+        }
+        gamePanel.requestFocus();
+    }
+
+    public void returnToMenu(ActionEvent actionEvent) {
+        try {
+            // Stop the game timeline
+            if (timeLine != null) {
+                timeLine.stop();
+            }
+            
+            // Load the main menu FXML
+            var location = getClass().getClassLoader().getResource("Menu.fxml");
+            if (location == null) {
+                throw new IllegalStateException("Menu.fxml not found");
+            }
+            FXMLLoader loader = new FXMLLoader(location);
+            Parent root = loader.load();
+            
+            // Get the current stage and switch to menu scene
+            Stage stage = (Stage) gamePanel.getScene().getWindow();
+            Scene menuScene = new Scene(root, 800, 800);
+            stage.setScene(menuScene);
+            stage.setTitle("TetrisJFX - Menu");
+            
+            // Center the window on screen
+            stage.centerOnScreen();
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void restartGame(ActionEvent actionEvent) {
+        // Stop the current game
+        if (timeLine != null) {
+            timeLine.stop();
+        }
+        
+        // Reset game state
+        gameOverPanel.setVisible(false);
+        eventListener.createNewGame();
+        
+        // Reset pause state
+        isPause.setValue(Boolean.FALSE);
+        isGameOver.setValue(Boolean.FALSE);
+        if (pauseButton != null) {
+            pauseButton.setText("Pause");
+        }
+        
+        // Restart the timeline
+        timeLine.play();
         gamePanel.requestFocus();
     }
 
