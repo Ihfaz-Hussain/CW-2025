@@ -43,9 +43,12 @@ public class MenuController {
         new GameController(guiController);
 
         Stage stage = (Stage) playButton.getScene().getWindow();
-        Scene gameScene = new Scene(root, 720, 660);
+        Scene gameScene = new Scene(root, 800, 800);
         stage.setScene(gameScene);
         stage.setTitle("TetrisJFX - Game");
+        
+        // Center the window on screen
+        stage.centerOnScreen();
         stage.show();
     }
 

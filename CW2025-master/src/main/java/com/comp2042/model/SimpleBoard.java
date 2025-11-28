@@ -94,7 +94,7 @@ public class SimpleBoard implements Board {
         holdUsedThisTurn = false; // allow hold again on the fresh brick
         // Pull the next brick from the generator and make it active
         brickRotator.setBrick(brickGenerator.getBrick());
-        currentOffset = new Point(4, 0);
+        currentOffset = new Point(4, 1);
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(),
                 (int) currentOffset.getY());
 
@@ -102,7 +102,7 @@ public class SimpleBoard implements Board {
 
     private boolean spawnBrick(Brick brick) {
         brickRotator.setBrick(brick);
-        currentOffset = new Point(4, 0);
+        currentOffset = new Point(4, 1);
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(),
                 (int) currentOffset.getY());
     }
