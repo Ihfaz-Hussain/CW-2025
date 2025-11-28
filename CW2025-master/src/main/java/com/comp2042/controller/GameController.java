@@ -8,7 +8,7 @@ import com.comp2042.model.*;
 
 public class GameController implements InputEventListener {
 
-    private Board board = new SimpleBoard(25, 10);
+    private Board board = new SimpleBoard(10, 25);
 
     private final GuiController viewGuiController;
 
@@ -22,7 +22,7 @@ public class GameController implements InputEventListener {
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         // Bind score label to score property
         viewGuiController.bindScore(board.getScore().scoreProperty());
-        //Bind level label to level property
+        // Bind level label to level property
         viewGuiController.bindLevel(board.getScore().levelProperty());
 
     }
@@ -57,12 +57,14 @@ public class GameController implements InputEventListener {
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
         }
 
-        //doesn't match tetris game logic
-        /*else {
-            if (event.getEventSource() == EventSource.USER) {
-                board.getScore().add(1);
-            }
-        }*/
+        // doesn't match tetris game logic
+        /*
+         * else {
+         * if (event.getEventSource() == EventSource.USER) {
+         * board.getScore().add(1);
+         * }
+         * }
+         */
         return new DownData(clearRow, board.getViewData());
     }
 
@@ -70,30 +72,29 @@ public class GameController implements InputEventListener {
     public DownData onHardDropEvent(MoveEvent event) {
         ClearRow clearRow = null;
 
-        //move the current brick down until it can't move anymore
+        // move the current brick down until it can't move anymore
         while (board.moveBrickDown()) {
             // no-op; board.moveBrickDown() updates currentOffset inside SimpleBoard
         }
 
-        //Lock the brick into the background and clear completed rows
+        // Lock the brick into the background and clear completed rows
         board.mergeBrickToBackground();
         clearRow = board.clearRows();
         if (clearRow.getLinesRemoved() > 0) {
             board.getScore().add(clearRow.getScoreBonus());
         }
 
-        //Spawn a new brick; if we can't, it's game over
+        // Spawn a new brick; if we can't, it's game over
         if (board.createNewBrick()) {
             viewGuiController.gameOver();
         }
 
-        //Refresh the background (so the locked brick + cleared rows are visible)
+        // Refresh the background (so the locked brick + cleared rows are visible)
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
 
-        //Return view data for the NEW current brick
+        // Return view data for the NEW current brick
         return new DownData(clearRow, board.getViewData());
     }
-
 
     @Override
     public ViewData onLeftEvent(MoveEvent event) {
@@ -112,7 +113,6 @@ public class GameController implements InputEventListener {
         board.rotateLeftBrick();
         return board.getViewData();
     }
-
 
     @Override
     public void createNewGame() {
