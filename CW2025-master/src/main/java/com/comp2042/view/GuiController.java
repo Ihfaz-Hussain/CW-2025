@@ -34,14 +34,13 @@ import javafx.scene.control.Button;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
+    private static final int HIDDEN_ROWS = 2; // rows at the top we don’t show
 
     @FXML
     private Button pauseButton;
@@ -61,8 +60,9 @@ public class GuiController implements Initializable {
     @FXML
     private BorderPane gameBoard;
 
-
     private Rectangle[][] displayMatrix;
+
+    private ViewData currentViewData;
 
     private Map<KeyCode, Runnable> keyActions;
 
@@ -79,32 +79,29 @@ public class GuiController implements Initializable {
     private void setupKeyActions() {
         keyActions = new HashMap<>();
 
-        keyActions.put(KeyCode.LEFT, () ->
-                refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER))));
+        keyActions.put(KeyCode.LEFT,
+                () -> refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER))));
         keyActions.put(KeyCode.A, keyActions.get(KeyCode.LEFT));
 
-        keyActions.put(KeyCode.RIGHT, () ->
-                refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER))));
+        keyActions.put(KeyCode.RIGHT,
+                () -> refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER))));
         keyActions.put(KeyCode.D, keyActions.get(KeyCode.RIGHT));
 
-        keyActions.put(KeyCode.UP, () ->
-                refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER))));
+        keyActions.put(KeyCode.UP,
+                () -> refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER))));
         keyActions.put(KeyCode.W, keyActions.get(KeyCode.UP));
 
-        keyActions.put(KeyCode.DOWN, () ->
-                moveDown(new MoveEvent(EventType.DOWN, EventSource.USER)));
+        keyActions.put(KeyCode.DOWN, () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.USER)));
         keyActions.put(KeyCode.S, keyActions.get(KeyCode.DOWN));
 
-        keyActions.put(KeyCode.SPACE, () ->
-                hardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER)));
+        keyActions.put(KeyCode.SPACE, () -> hardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER)));
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(
                 getClass().getClassLoader().getResource("digital.ttf").toExternalForm(),
-                38
-        );
+                38);
 
         // Build the key → action map once
         setupKeyActions();
@@ -133,37 +130,72 @@ public class GuiController implements Initializable {
         reflection.setTopOffset(-12);
     }
 
-
     public void initGameView(int[][] boardMatrix, ViewData brick) {
+        this.currentViewData = brick;
+        // Create rectangle grid for the visible rows (board rows 2..end)
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
-        for (int i = 2; i < boardMatrix.length; i++) {
-            for (int j = 0; j < boardMatrix[i].length; j++) {
+
+        for (int row = HIDDEN_ROWS; row < boardMatrix.length; row++) {
+            for (int col = 0; col < boardMatrix[row].length; col++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                 rectangle.setFill(Color.TRANSPARENT);
-                displayMatrix[i][j] = rectangle;
-                gamePanel.add(rectangle, j, i - 2);
+                rectangle.setArcHeight(9);
+                rectangle.setArcWidth(9);
+
+                displayMatrix[row][col] = rectangle;
+
+                // visible row index = board row index - hidden rows
+                int visibleRow = row - HIDDEN_ROWS;
+                gamePanel.add(rectangle, col, visibleRow);
             }
         }
 
+        // Create rectangles for the falling brick in a separate small GridPane
         rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
+        brickPanel.getChildren().clear();
+
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                 rectangle.setFill(getFillColor(brick.getBrickData()[i][j]));
+                rectangle.setArcHeight(9);
+                rectangle.setArcWidth(9);
                 rectangles[i][j] = rectangle;
                 brickPanel.add(rectangle, j, i);
             }
         }
-        brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
-        brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
 
+        // Position the brick according to its board coordinates
+        brickPanel.setManaged(false);
+        updateBrickPanelPosition(brick);
 
+        gamePanel.layoutXProperty().addListener((obs, oldVal, newVal) -> updateBrickPanelPosition(currentViewData));
+        gamePanel.layoutYProperty().addListener((obs, oldVal, newVal) -> updateBrickPanelPosition(currentViewData));
+
+        // Start the falling timer
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(400),
-                ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
-        ));
+                ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))));
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();
+    }
+
+    private void updateBrickPanelPosition(ViewData brick) {
+        if (isPause.getValue() == Boolean.TRUE) {
+            return;
+        }
+
+        double cellWidth = BRICK_SIZE + brickPanel.getHgap();
+        double cellHeight = BRICK_SIZE + brickPanel.getVgap();
+
+        // x is straightforward: column index
+        double x = gamePanel.getLayoutX() + brick.getxPosition() * cellWidth;
+
+        // y: subtract hidden rows so row 2 maps to visible row 0
+        double y = gamePanel.getLayoutY() + (brick.getyPosition() - HIDDEN_ROWS) * cellHeight;
+
+        brickPanel.setLayoutX(x);
+        brickPanel.setLayoutY(y);
     }
 
     private Paint getFillColor(int i) {
@@ -200,17 +232,17 @@ public class GuiController implements Initializable {
         return returnPaint;
     }
 
-
     private void refreshBrick(ViewData brick) {
-        if (isPause.getValue() == Boolean.FALSE) {
-            brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
-            brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
-            for (int i = 0; i < brick.getBrickData().length; i++) {
-                for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                    setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
-                }
+        this.currentViewData = brick;
+        // update brick shape colors
+        for (int i = 0; i < brick.getBrickData().length; i++) {
+            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+                setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
             }
         }
+
+        // and move it to the correct place over the main rectangle
+        updateBrickPanelPosition(brick);
     }
 
     public void refreshGameBackground(int[][] board) {
@@ -231,7 +263,8 @@ public class GuiController implements Initializable {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
-                NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
+                NotificationPanel notificationPanel = new NotificationPanel(
+                        "+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
             }
@@ -244,7 +277,8 @@ public class GuiController implements Initializable {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onHardDropEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
-                NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
+                NotificationPanel notificationPanel = new NotificationPanel(
+                        "+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
             }
@@ -253,7 +287,6 @@ public class GuiController implements Initializable {
         }
         gamePanel.requestFocus();
     }
-
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
@@ -272,32 +305,29 @@ public class GuiController implements Initializable {
                     return Math.min(xScale, yScale); // pick the smaller to avoid stretching
                 },
                 scene.widthProperty(),
-                scene.heightProperty()
-        );
+                scene.heightProperty());
 
         gameBoard.scaleXProperty().bind(scale);
         gameBoard.scaleYProperty().bind(scale);
 
-        //Board centered to the screen
+        // Board centered to the screen
         gameBoard.layoutXProperty().bind(
-                scene.widthProperty().subtract(gameBoard.widthProperty()).divide(2)
-        );
+                scene.widthProperty().subtract(gameBoard.widthProperty()).divide(2));
     }
 
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null && integerProperty != null) {
             scoreLabel.textProperty().bind(
-                    Bindings.concat("Score: ", integerProperty)
-            );
+                    Bindings.concat("Score: ", integerProperty));
         }
     }
+
     public void bindLevel(IntegerProperty levelProperty) {
         if (levelLabel != null && levelProperty != null) {
 
             // Show "Level: X" in the label
             levelLabel.textProperty().bind(
-                    Bindings.concat("Level: ", levelProperty)
-            );
+                    Bindings.concat("Level: ", levelProperty));
 
             // When the level changes, adjust the falling speed
             levelProperty.addListener((obs, oldVal, newVal) -> {
@@ -320,7 +350,7 @@ public class GuiController implements Initializable {
             return;
         }
 
-        //every level increases rate by 0.2, minimum rate 1.0..
+        // every level increases rate by 0.2, minimum rate 1.0..
         double rate = 1.0 + (level - 1) * 0.2;
 
         // Optional: clamp to avoid insane speeds
@@ -330,7 +360,6 @@ public class GuiController implements Initializable {
 
         timeLine.setRate(rate);
     }
-
 
     public void gameOver() {
         timeLine.stop();
