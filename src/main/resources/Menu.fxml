@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.comp2042.controller.MenuController"
+      alignment="CENTER"
+      spacing="18"
+      styleClass="mainMenu"
+      stylesheets="@/window_style.css">
+
+
+    <Label text="TETRIS" style="-fx-font-size: 36px; -fx-text-fill: white;"/>
+    <Button fx:id="playButton"
+            text="Play"
+            onAction="#onPlayClicked"
+            prefWidth="220"/>
+
+    <Button fx:id="highScoreButton"
+            text="High Scores"
+            onAction="#onHighScoreClicked"
+            prefWidth="220"/>
+
+    <ToggleButton fx:id="musicToggle"
+                  text="Music: ON"
+                  onAction="#onMusicToggle"
+                  prefWidth="220"/>
+
+    <Button fx:id="exitButton"
+            text="Exit"
+            onAction="#onExitClicked"
+            prefWidth="200"
+            style="-fx-font-size: 16px;"/>
+
+</VBox>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.comp2042.HighScoreController"
+      alignment="CENTER"
+      spacing="15"
+      styleClass="mainMenu"
+      stylesheets="@window_style.css">
+
+    <Label text="HIGH SCORES" styleClass="game-label"/>
+
+    <Label fx:id="score1Label" text="1. ---" style="-fx-text-fill: white;"/>
+    <Label fx:id="score2Label" text="2. ---" style="-fx-text-fill: white;"/>
+    <Label fx:id="score3Label" text="3. ---" style="-fx-text-fill: white;"/>
+
+    <Button text="Back to Menu"
+            onAction="#onBackClicked"
+            prefWidth="200"/>
+</VBox>

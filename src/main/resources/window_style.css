@@ -1,0 +1,9 @@
+/* window_style.css
+   Aggregator file so FXML & Java still only need to reference this one.
+*/
+
+@import "base.css";
+@import "game.css";
+@import "menu.css";
+@import "highscore.css";
+@import "hud.css";

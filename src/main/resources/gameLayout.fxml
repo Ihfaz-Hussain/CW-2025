@@ -1,0 +1,80 @@
+<?import com.comp2042.view.GameOverPanel?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:controller="com.comp2042.view.GuiController"
+            xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@window_style.css">
+    <children>
+        <StackPane AnchorPane.topAnchor="0.0"
+                   AnchorPane.rightAnchor="0.0"
+                   AnchorPane.bottomAnchor="0.0"
+                   AnchorPane.leftAnchor="0.0">
+        <HBox spacing="24"
+              alignment="CENTER"
+              StackPane.alignment="CENTER"
+              AnchorPane.topAnchor="24.0"
+              AnchorPane.rightAnchor="24.0"
+              AnchorPane.bottomAnchor="24.0"
+              AnchorPane.leftAnchor="24.0">
+        <BorderPane fx:id="gameBoard"
+                    styleClass="gameBoard">
+            <center>
+                <StackPane alignment="CENTER">
+                    <GridPane fx:id="gamePanel" hgap="1" vgap="1"/>
+                    <GridPane fx:id="brickPanel" hgap="1" vgap="1"/>
+                </StackPane>
+            </center>
+            <top>
+                <HBox spacing="16" alignment="CENTER_LEFT" styleClass="hud-banner">
+                    <Label fx:id="scoreLabel" text="Score: 0" styleClass="game-label"/>
+                    <Label fx:id="levelLabel" text="Level: 1" styleClass="game-label"/>
+                    <Label fx:id="linesLabel" text="Lines: 0" styleClass="game-label"/>
+                </HBox>
+            </top>
+        </BorderPane>
+
+        <!--Stats in a top right bar, Score, level pause-->
+        <!--score label-->
+        <VBox spacing="18" alignment="TOP_CENTER"
+              styleClass="hud-card">
+            <Label text="TETRIS" styleClass="hud-title"/>
+            <Button fx:id="pauseButton" text="Pause" onAction="#pauseGame" styleClass="hud-button"/>
+
+            <Separator/>
+            <Label text="NEXT" styleClass="hud-subtitle"/>
+            <GridPane fx:id="nextPiecePanel" hgap="4" vgap="4" styleClass="preview-grid"/>
+
+            <Label text="HOLD" styleClass="hud-subtitle"/>
+            <GridPane fx:id="holdPiecePanel" hgap="4" vgap="4" styleClass="preview-grid"/>
+
+            <Separator/>
+            <VBox spacing="6" alignment="CENTER_LEFT" styleClass="controls-box">
+                <Label text="Controls" styleClass="hud-subtitle"/>
+                <Label text="Move: Arrow Keys / A D" styleClass="helpInfo"/>
+                <Label text="Rotate: W / ↑" styleClass="helpInfo"/>
+                <Label text="Hard drop: Space" styleClass="helpInfo"/>
+                <Label text="Hold: Shift / C" styleClass="helpInfo"/>
+                <Label text="Pause: Button" styleClass="helpInfo"/>
+            </VBox>
+        </VBox>
+        </HBox>
+
+        <Group fx:id="groupNotification" layoutX="14.0" layoutY="203.0">
+            <VBox alignment="CENTER">
+                <GameOverPanel fx:id="gameOverPanel"/>
+            </VBox>
+        </Group>
+        </StackPane>
+    </children>
+
+</AnchorPane>
