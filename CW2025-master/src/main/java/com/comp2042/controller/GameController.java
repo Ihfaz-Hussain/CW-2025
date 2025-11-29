@@ -11,10 +11,16 @@ public class GameController implements InputEventListener {
     private Board board = new SimpleBoard(10, 25);
 
     private final GuiController viewGuiController;
+    private final String playerName;
 
     public GameController(GuiController c) {
+        this(c, "Anonymous");
+    }
+    
+    public GameController(GuiController c, String playerName) {
         // Connect GUI to this controller so key presses call our methods
         viewGuiController = c;
+        this.playerName = playerName;
         board.createNewBrick();
         // Connect GUI to this controller so key presses call our methods
         viewGuiController.setEventListener(this);
@@ -24,7 +30,6 @@ public class GameController implements InputEventListener {
         viewGuiController.bindScore(board.getScore().scoreProperty());
         // Bind level label to level property
         viewGuiController.bindLevel(board.getScore().levelProperty());
-
     }
 
     @Override
@@ -44,13 +49,13 @@ public class GameController implements InputEventListener {
             // If we cannot place a new brick → game over
             if (board.createNewBrick()) {
 
-                // 1. Get the final score from the Score object
+                // Get the final score from the Score object
                 int finalScore = board.getScore().getScore();
 
-                // 2. Tell HighScoreManager to record this score
+                // Tell HighScoreManager to record this score
                 HighScoreManager.recordScore(finalScore);
 
-                // 3. Show game over panel
+                // Show game over panel
                 viewGuiController.gameOver();
             }
 
@@ -86,6 +91,9 @@ public class GameController implements InputEventListener {
 
         // Spawn a new brick; if we can't, it's game over
         if (board.createNewBrick()) {
+            // Save the high score with player name
+            int finalScore = board.getScore().getScore();
+            HighScoreManager.recordScore(playerName, finalScore);
             viewGuiController.gameOver();
         }
 
