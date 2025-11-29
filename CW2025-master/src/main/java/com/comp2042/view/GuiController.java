@@ -174,7 +174,7 @@ public class GuiController implements Initializable {
         gamePanel.setMinHeight(prefHeight);
         gamePanel.setMaxWidth(prefWidth);
         gamePanel.setMaxHeight(prefHeight);
-        
+
         // Also constrain the gameBoard BorderPane to match the game grid size
         gameBoard.setPrefWidth(prefWidth);
         gameBoard.setPrefHeight(prefHeight);
@@ -432,15 +432,15 @@ public class GuiController implements Initializable {
             double baseHeight = 780;
             double currentWidth = scene.getWidth();
             double currentHeight = scene.getHeight();
-            
+
             // Calculate scale factors
             double widthScale = currentWidth / baseWidth;
             double heightScale = currentHeight / baseHeight;
-            
+
             // Use the smaller scale to maintain aspect ratio
             return Math.min(widthScale, heightScale);
         }, scene.widthProperty(), scene.heightProperty());
-        
+
         // Apply scale to game board
         scaleBinding.addListener((obs, oldVal, newVal) -> {
             double scale = newVal.doubleValue();
@@ -448,7 +448,7 @@ public class GuiController implements Initializable {
             gameBoard.setScaleX(scale);
             gameBoard.setScaleY(scale);
         });
-        
+
         // Initial scale
         gameBoard.setScaleX(scaleBinding.get());
         gameBoard.setScaleY(scaleBinding.get());
@@ -568,7 +568,7 @@ public class GuiController implements Initializable {
             if (timeLine != null) {
                 timeLine.stop();
             }
-            
+
             // Load the main menu FXML
             var location = getClass().getClassLoader().getResource("Menu.fxml");
             if (location == null) {
@@ -576,13 +576,13 @@ public class GuiController implements Initializable {
             }
             FXMLLoader loader = new FXMLLoader(location);
             Parent root = loader.load();
-            
+
             // Get the current stage and switch to menu scene
             Stage stage = (Stage) gamePanel.getScene().getWindow();
             Scene menuScene = new Scene(root, 800, 800);
             stage.setScene(menuScene);
             stage.setTitle("TetrisJFX - Menu");
-            
+
             // Center the window on screen
             stage.centerOnScreen();
             stage.show();
@@ -596,18 +596,18 @@ public class GuiController implements Initializable {
         if (timeLine != null) {
             timeLine.stop();
         }
-        
+
         // Reset game state
         gameOverPanel.setVisible(false);
         eventListener.createNewGame();
-        
+
         // Reset pause state
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
         if (pauseButton != null) {
             pauseButton.setText("Pause");
         }
-        
+
         // Restart the timeline
         timeLine.play();
         gamePanel.requestFocus();

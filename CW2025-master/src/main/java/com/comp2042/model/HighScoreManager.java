@@ -4,20 +4,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.nio.file.Path;
 
 public class HighScoreManager {
     private static final Path HIGH_SCORE_PATH = Paths.get("highscores.txt");
-    //read highscores from the txt file
-    public static List<Integer> loadHighScores() {
-        List<Integer> scores = new ArrayList<>();
+
+    // Read high scores from the file
+    public static List<HighScoreEntry> loadHighScores() {
+        List<HighScoreEntry> entries = new ArrayList<>();
 
         // If the file does not exist yet → no scores saved
         if (!Files.exists(HIGH_SCORE_PATH)) {
-            return scores;
+            return entries;
         }
 
         try {
@@ -28,47 +28,70 @@ public class HighScoreManager {
                 line = line.trim();
                 if (!line.isEmpty()) {
                     try {
-                        // Convert text like "1200" to int 1200
-                        scores.add(Integer.parseInt(line));
-                    } catch (NumberFormatException ignored) {
-                        // If line is not a number, just skip it
+                        // Parse format: "PlayerName:Score"
+                        String[] parts = line.split(":");
+                        if (parts.length == 2) {
+                            String name = parts[0].trim();
+                            int score = Integer.parseInt(parts[1].trim());
+                            entries.add(new HighScoreEntry(name, score));
+                        }
+                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException ignored) {
+                        // If line format is invalid, just skip it
                     }
                 }
             }
 
-            // Sort scores: highest first
-            scores.sort(Comparator.reverseOrder());
+            // Sort entries by score (highest first) - HighScoreEntry implements Comparable
+            entries.sort(null);
 
             // If there are more than 3 scores, keep only the first 3
-            if (scores.size() > 3) {
-                scores = new ArrayList<>(scores.subList(0, 3));
+            if (entries.size() > 3) {
+                entries = new ArrayList<>(entries.subList(0, 3));
             }
 
         } catch (IOException e) {
             // If any file reading error happens, just return empty list
-            scores.clear();
+            entries.clear();
         }
 
-        return scores;
+        return entries;
     }
 
-    public static void recordScore(int newScore) {
-        List<Integer> scores = loadHighScores();
-        // Add the new score
-        scores.add(newScore);
-        //Descending order of highscores kept
-        scores.sort(Comparator.reverseOrder());
-        //Top three highscores kept
-        if (scores.size() > 3) {
-            scores = new ArrayList<>(scores.subList(0, 3));
+    // Record a new score with player name
+    public static void recordScore(String playerName, int score) {
+        List<HighScoreEntry> entries = loadHighScores();
+
+        // Add the new entry
+        entries.add(new HighScoreEntry(playerName, score));
+
+        // Sort by score (highest first)
+        entries.sort(null);
+
+        // Keep only top 3
+        if (entries.size() > 3) {
+            entries = new ArrayList<>(entries.subList(0, 3));
         }
-        // Save updated scores to file
-        saveHighScores(scores);
+
+        // Save updated entries to file
+        saveHighScores(entries);
     }
-    //save new highscore if its greater than the current
-    private static void saveHighScores(List<Integer> scores) {
-        List<String> lines = scores.stream()
-                .map(String::valueOf)
+
+    // Legacy method for backward compatibility
+    public static void recordScore(int score) {
+        recordScore("Anonymous", score);
+    }
+
+    // Legacy method for backward compatibility
+    public static List<Integer> loadHighScoresAsIntegers() {
+        return loadHighScores().stream()
+                .map(HighScoreEntry::getScore)
+                .collect(Collectors.toList());
+    }
+
+    // Save high score entries to file
+    private static void saveHighScores(List<HighScoreEntry> entries) {
+        List<String> lines = entries.stream()
+                .map(entry -> entry.getPlayerName() + ":" + entry.getScore())
                 .collect(Collectors.toList());
 
         try {
@@ -77,6 +100,4 @@ public class HighScoreManager {
             e.printStackTrace();
         }
     }
-
-
 }
