@@ -65,7 +65,7 @@ src/main/java/com/comp2042/
 
 ## Recent Refactoring (OOP Principles Applied)
 
-### 🎯 **Single Responsibility Principle (SRP)**
+### **Single Responsibility Principle (SRP)**
 
 **Before**: The `GuiController` class (624 lines) handled multiple responsibilities:
 - UI rendering and layout management
@@ -116,7 +116,7 @@ public class InputHandler {
 - `InputHandler` supports adding new key bindings dynamically
 - UI components can be swapped without changing core logic
 
-### 🔄 **Dependency Inversion Principle (DIP)**
+### **Dependency Inversion Principle (DIP)**
 
 **Before**: Direct dependencies and tight coupling
 ```java
@@ -132,7 +132,7 @@ gameTimer = new GameTimer(eventListener, onTickAction);
 inputHandler = new InputHandler();
 ```
 
-### 📊 **Refactoring Impact**
+###**Refactoring Impact**
 
 | Metric | Before | After | Improvement |
 |--------|--------|-------|-------------|
@@ -142,7 +142,7 @@ inputHandler = new InputHandler();
 | Testability | Poor | Good | Isolated components |
 | Maintainability | Difficult | Easy | Clear separation |
 
-### 🎮 **Benefits Achieved**
+###**Benefits Achieved**
 
 1. **Better Testability**: `GameTimer` and `InputHandler` can be unit tested independently
 2. **Improved Maintainability**: Changes to timing or input logic don't affect UI rendering
