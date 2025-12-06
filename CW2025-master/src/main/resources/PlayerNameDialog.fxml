@@ -17,10 +17,7 @@
     
     <children>
         <!-- Title -->
-        <Label text="ENTER YOUR NAME" styleClass="highscore-title"/>
-        
-        <!-- Instructions -->
-        <Label text="Please enter your name for the high score:" styleClass="highscore-entry"/>
+        <Label text="ENTER PLAYER NAME" styleClass="highscore-title"/>
         
         <!-- Name Input Field -->
         <TextField fx:id="nameTextField" 
