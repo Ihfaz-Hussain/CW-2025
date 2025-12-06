@@ -109,7 +109,7 @@ public class InputHandler {
 }
 ```
 
-### 🔧 **Open/Closed Principle (OCP)**
+### **OOP princpals**
 
 **Improvement**: The refactored design allows for extension without modification:
 - `GameTimer` can be extended for different timing strategies
