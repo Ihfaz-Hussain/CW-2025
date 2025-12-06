@@ -7,8 +7,6 @@ import com.comp2042.event.InputEventListener;
 import com.comp2042.event.MoveEvent;
 import com.comp2042.model.DownData;
 import com.comp2042.model.ViewData;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.BooleanProperty;
@@ -22,20 +20,15 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.util.Duration;
-import javafx.scene.control.Button;
-import java.util.HashMap;
-import java.util.Map;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -77,8 +70,6 @@ public class GuiController implements Initializable {
 
     private ViewData currentViewData;
 
-    private Map<KeyCode, Runnable> keyActions;
-
     private InputEventListener eventListener;
 
     private Rectangle[][] rectangles;
@@ -87,36 +78,13 @@ public class GuiController implements Initializable {
 
     private Rectangle[][] holdPieceRectangles;
 
-    private Timeline timeLine;
+    private GameTimer gameTimer;
+
+    private InputHandler inputHandler;
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
-
-    private void setupKeyActions() {
-        keyActions = new HashMap<>();
-
-        keyActions.put(KeyCode.LEFT,
-                () -> refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER))));
-        keyActions.put(KeyCode.A, keyActions.get(KeyCode.LEFT));
-
-        keyActions.put(KeyCode.RIGHT,
-                () -> refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER))));
-        keyActions.put(KeyCode.D, keyActions.get(KeyCode.RIGHT));
-
-        keyActions.put(KeyCode.UP,
-                () -> refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER))));
-        keyActions.put(KeyCode.W, keyActions.get(KeyCode.UP));
-
-        keyActions.put(KeyCode.DOWN, () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.USER)));
-        keyActions.put(KeyCode.S, keyActions.get(KeyCode.DOWN));
-
-        keyActions.put(KeyCode.SPACE, () -> hardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER)));
-
-        keyActions.put(KeyCode.SHIFT,
-                () -> refreshBrick(eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER))));
-        keyActions.put(KeyCode.C, keyActions.get(KeyCode.SHIFT));
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -124,19 +92,19 @@ public class GuiController implements Initializable {
                 getClass().getClassLoader().getResource("digital.ttf").toExternalForm(),
                 38);
 
-        // Build the key → action map once
-        setupKeyActions();
+        // Initialize input handler
+        inputHandler = new InputHandler();
 
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
 
-        // Single, clean key handler
+        // Single, clean key handler using InputHandler
         gamePanel.setOnKeyPressed(event -> {
             if (isPause.getValue() || isGameOver.getValue()) {
                 return;
             }
 
-            Runnable action = keyActions.get(event.getCode());
+            Runnable action = inputHandler.getActionForKey(event.getCode());
             if (action != null) {
                 action.run();
                 event.consume();
@@ -225,12 +193,12 @@ public class GuiController implements Initializable {
         // Update preview panels with initial data
         updatePreviewPanels(brick);
 
+        // Initialize game timer
+        gameTimer = new GameTimer(eventListener, 
+            () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD)));
+        
         // Start the falling timer
-        timeLine = new Timeline(new KeyFrame(
-                Duration.millis(400),
-                ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))));
-        timeLine.setCycleCount(Timeline.INDEFINITE);
-        timeLine.play();
+        gameTimer.start();
     }
 
     private void updateBrickPanelPosition(ViewData brick) {
@@ -285,7 +253,7 @@ public class GuiController implements Initializable {
         return returnPaint;
     }
 
-    private void refreshBrick(ViewData brick) {
+    public void refreshBrick(ViewData brick) {
         this.currentViewData = brick;
         // update brick shape colors
         for (int i = 0; i < brick.getBrickData().length; i++) {
@@ -391,7 +359,7 @@ public class GuiController implements Initializable {
         rectangle.setArcWidth(9);
     }
 
-    private void moveDown(MoveEvent event) {
+    public void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
@@ -405,7 +373,7 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
-    private void hardDrop(MoveEvent event) {
+    public void hardDrop(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onHardDropEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
@@ -413,6 +381,8 @@ public class GuiController implements Initializable {
                         "+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
+                // Refresh background when rows are cleared - we need to get this from the board
+                // The GameController handles this internally, so we don't need to refresh here
             }
             // After hard drop, we want to show the *new* active brick
             refreshBrick(downData.getViewData());
@@ -422,6 +392,8 @@ public class GuiController implements Initializable {
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
+        inputHandler.setEventListener(eventListener);
+        inputHandler.setGuiController(this);
     }
 
     public void bindToScene(Scene scene) {
@@ -471,49 +443,32 @@ public class GuiController implements Initializable {
             // When the level changes, adjust the falling speed
             levelProperty.addListener((obs, oldVal, newVal) -> {
                 int level = newVal.intValue();
-                updateSpeedForLevel(level);
+                gameTimer.updateSpeedForLevel(level);
             });
 
             // Make sure speed matches initial level (1) when game starts
-            updateSpeedForLevel(levelProperty.get());
+            gameTimer.updateSpeedForLevel(levelProperty.get());
         }
     }
 
-    /*
-     * Adjusts the Timeline speed so pieces fall faster at higher levels.
-     * rate = 1.0 → normal speed
-     * rate = 2.0 → twice as fast
-     */
-    private void updateSpeedForLevel(int level) {
-        if (timeLine == null) {
-            return;
-        }
-
-        // every level increases rate by 0.2, minimum rate 1.0..
-        double rate = 1.0 + (level - 1) * 0.2;
-
-        // Optional: clamp to avoid insane speeds
-        if (rate > 4.0) {
-            rate = 4.0;
-        }
-
-        timeLine.setRate(rate);
-    }
 
     public void gameOver() {
-        timeLine.stop();
+        gameTimer.stop();
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
+        inputHandler.setGameOver(true);
     }
 
     public void newGame(ActionEvent actionEvent) {
-        timeLine.stop();
+        gameTimer.stop();
         gameOverPanel.setVisible(false);
         eventListener.createNewGame();
         gamePanel.requestFocus();
-        timeLine.play();
+        gameTimer.start();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+        inputHandler.setPaused(false);
+        inputHandler.setGameOver(false);
     }
 
     public void pauseGame(ActionEvent actionEvent) {
@@ -525,19 +480,17 @@ public class GuiController implements Initializable {
         // Toggle pause state
         if (isPause.getValue() == Boolean.FALSE) {
             // Currently running → pause it
-            if (timeLine != null) {
-                timeLine.stop();
-            }
+            gameTimer.pause();
             isPause.setValue(Boolean.TRUE);
+            inputHandler.setPaused(true);
             if (pauseButton != null) {
                 pauseButton.setText("Resume");
             }
         } else {
             // Currently paused → resume it
-            if (timeLine != null) {
-                timeLine.play();
-            }
+            gameTimer.resume();
             isPause.setValue(Boolean.FALSE);
+            inputHandler.setPaused(false);
             if (pauseButton != null) {
                 pauseButton.setText("Pause");
             }
@@ -564,10 +517,8 @@ public class GuiController implements Initializable {
 
     public void returnToMenu(ActionEvent actionEvent) {
         try {
-            // Stop the game timeline
-            if (timeLine != null) {
-                timeLine.stop();
-            }
+            // Stop the game timer
+            gameTimer.stop();
 
             // Load the main menu FXML
             var location = getClass().getClassLoader().getResource("Menu.fxml");
@@ -593,9 +544,7 @@ public class GuiController implements Initializable {
 
     public void restartGame(ActionEvent actionEvent) {
         // Stop the current game
-        if (timeLine != null) {
-            timeLine.stop();
-        }
+        gameTimer.stop();
 
         // Reset game state
         gameOverPanel.setVisible(false);
@@ -604,12 +553,14 @@ public class GuiController implements Initializable {
         // Reset pause state
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+        inputHandler.setPaused(false);
+        inputHandler.setGameOver(false);
         if (pauseButton != null) {
             pauseButton.setText("Pause");
         }
 
-        // Restart the timeline
-        timeLine.play();
+        // Restart the timer
+        gameTimer.start();
         gamePanel.requestFocus();
     }
 
