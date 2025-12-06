@@ -16,7 +16,7 @@ public class GameController implements InputEventListener {
     public GameController(GuiController c) {
         this(c, "Anonymous");
     }
-    
+
     public GameController(GuiController c, String playerName) {
         // Connect GUI to this controller so key presses call our methods
         viewGuiController = c;
@@ -43,7 +43,7 @@ public class GameController implements InputEventListener {
             if (clearRow.getLinesRemoved() > 0) {
                 // Add score based on cleared lines
                 board.getScore().add(clearRow.getScoreBonus());
-                // (If you track level/lines, call that here too)
+                board.getScore().addLines(clearRow.getLinesRemoved());
             }
 
             // If we cannot place a new brick → game over
@@ -87,6 +87,7 @@ public class GameController implements InputEventListener {
         clearRow = board.clearRows();
         if (clearRow.getLinesRemoved() > 0) {
             board.getScore().add(clearRow.getScoreBonus());
+            board.getScore().addLines(clearRow.getLinesRemoved());
         }
 
         // Spawn a new brick; if we can't, it's game over
