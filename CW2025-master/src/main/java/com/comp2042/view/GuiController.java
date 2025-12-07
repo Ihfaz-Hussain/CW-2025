@@ -62,6 +62,9 @@ public class GuiController implements Initializable {
     private GridPane holdPiecePanel;
 
     @FXML
+    private Label linesLabel;
+
+    @FXML
     private BorderPane gameBoard;
 
     private ViewData currentViewData;
@@ -73,6 +76,11 @@ public class GuiController implements Initializable {
     private InputHandler inputHandler;
 
     private final ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
+
+    public boolean isRunning() {
+        return gameState.get() == GameState.RUNNING;
+    }
+
 
     public boolean isRunning() {
         return gameState.get() == GameState.RUNNING;
@@ -257,6 +265,13 @@ public class GuiController implements Initializable {
         }
     }
 
+    public void bindLines(IntegerProperty linesProperty) {
+        if (linesLabel != null && linesProperty != null) {
+            linesLabel.textProperty().bind(
+                    Bindings.concat("Lines: ", linesProperty));
+        }
+    }
+
     // --- Game Lifecycle ---
 
     public void gameOver() {
@@ -270,6 +285,7 @@ public class GuiController implements Initializable {
         gameTimer.stop();
         gameOverPanel.setVisible(false);
         eventListener.createNewGame();
+        gamePanel.requestFocus();
         gamePanel.requestFocus();
         gameTimer.start();
         gameState.set(GameState.RUNNING);
