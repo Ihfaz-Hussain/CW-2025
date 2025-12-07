@@ -9,10 +9,11 @@ import com.comp2042.model.DownData;
 import com.comp2042.model.ViewData;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
+import com.comp2042.model.GameState;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -71,9 +72,21 @@ public class GuiController implements Initializable {
 
     private InputHandler inputHandler;
 
-    private final BooleanProperty isPause = new SimpleBooleanProperty();
+    private final ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
 
-    private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+    public boolean isRunning() {
+        return gameState.get() == GameState.RUNNING;
+    }
+
+    public boolean isPaused() {
+        return gameState.get() == GameState.PAUSED;
+    }
+
+    public boolean isOver() {
+        return gameState.get() == GameState.OVER;
+    }
+
+    // --- Initialization ---
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -89,7 +102,7 @@ public class GuiController implements Initializable {
 
         // Single, clean key handler using InputHandler
         gamePanel.setOnKeyPressed(event -> {
-            if (isPause.getValue() || isGameOver.getValue()) {
+            if (!isRunning()) {
                 return;
             }
 
@@ -132,7 +145,7 @@ public class GuiController implements Initializable {
     }
 
     private void updateBrickPanelPosition(ViewData brick) {
-        if (isPause.getValue() == Boolean.TRUE) {
+        if (isPaused()) {
             return;
         }
         gameRenderer.updateBrickPanelPosition(brick);
@@ -147,38 +160,38 @@ public class GuiController implements Initializable {
         gameRenderer.refreshGameBackground(board);
     }
 
+    // --- Game Logic Delegates ---
+
+    private void handleLineClearEffects(DownData downData) {
+        if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
+            NotificationPanel notificationPanel = new NotificationPanel(
+                    "+" + downData.getClearRow().getScoreBonus());
+            groupNotification.getChildren().add(notificationPanel);
+            notificationPanel.showScore(groupNotification.getChildren());
+            BoardShake.play(gameBoard);
+        }
+    }
+
     public void moveDown(MoveEvent event) {
-        if (isPause.getValue() == Boolean.FALSE) {
+        if (isRunning()) {
             DownData downData = eventListener.onDownEvent(event);
-            if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
-                NotificationPanel notificationPanel = new NotificationPanel(
-                        "+" + downData.getClearRow().getScoreBonus());
-                groupNotification.getChildren().add(notificationPanel);
-                notificationPanel.showScore(groupNotification.getChildren());
-                BoardShake.play(gameBoard);
-            }
+            handleLineClearEffects(downData);
             refreshBrick(downData.getViewData());
         }
         gamePanel.requestFocus();
     }
 
     public void hardDrop(MoveEvent event) {
-        if (isPause.getValue() == Boolean.FALSE) {
+        if (isRunning()) {
             DownData downData = eventListener.onHardDropEvent(event);
-            if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
-                NotificationPanel notificationPanel = new NotificationPanel(
-                        "+" + downData.getClearRow().getScoreBonus());
-                groupNotification.getChildren().add(notificationPanel);
-                notificationPanel.showScore(groupNotification.getChildren());
-                BoardShake.play(gameBoard);
-                // Refresh background when rows are cleared - we need to get this from the board
-                // The GameController handles this internally, so we don't need to refresh here
-            }
+            handleLineClearEffects(downData);
             // After hard drop, we want to show the *new* active brick
             refreshBrick(downData.getViewData());
         }
         gamePanel.requestFocus();
     }
+
+    // --- Input & Setup ---
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
@@ -214,7 +227,10 @@ public class GuiController implements Initializable {
         // Initial scale
         gameBoard.setScaleX(scaleBinding.get());
         gameBoard.setScaleY(scaleBinding.get());
+        gameBoard.setScaleY(scaleBinding.get());
     }
+
+    // --- UI Binding ---
 
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null && integerProperty != null) {
@@ -241,10 +257,12 @@ public class GuiController implements Initializable {
         }
     }
 
+    // --- Game Lifecycle ---
+
     public void gameOver() {
         gameTimer.stop();
         gameOverPanel.setVisible(true);
-        isGameOver.setValue(Boolean.TRUE);
+        gameState.set(GameState.OVER);
         inputHandler.setGameOver(true);
     }
 
@@ -254,23 +272,22 @@ public class GuiController implements Initializable {
         eventListener.createNewGame();
         gamePanel.requestFocus();
         gameTimer.start();
-        isPause.setValue(Boolean.FALSE);
-        isGameOver.setValue(Boolean.FALSE);
+        gameState.set(GameState.RUNNING);
         inputHandler.setPaused(false);
         inputHandler.setGameOver(false);
     }
 
     public void pauseGame(ActionEvent actionEvent) {
         // Do nothing if the game is already over
-        if (isGameOver.getValue() == Boolean.TRUE) {
+        if (isOver()) {
             return;
         }
 
         // Toggle pause state
-        if (isPause.getValue() == Boolean.FALSE) {
+        if (isRunning()) {
             // Currently running → pause it
             gameTimer.pause();
-            isPause.setValue(Boolean.TRUE);
+            gameState.set(GameState.PAUSED);
             inputHandler.setPaused(true);
             if (pauseButton != null) {
                 pauseButton.setText("Resume");
@@ -278,7 +295,7 @@ public class GuiController implements Initializable {
         } else {
             // Currently paused → resume it
             gameTimer.resume();
-            isPause.setValue(Boolean.FALSE);
+            gameState.set(GameState.RUNNING);
             inputHandler.setPaused(false);
             if (pauseButton != null) {
                 pauseButton.setText("Pause");
@@ -303,6 +320,8 @@ public class GuiController implements Initializable {
         }
         gamePanel.requestFocus();
     }
+
+    // --- Navigation ---
 
     public void returnToMenu(ActionEvent actionEvent) {
         try {
@@ -340,8 +359,7 @@ public class GuiController implements Initializable {
         eventListener.createNewGame();
 
         // Reset pause state
-        isPause.setValue(Boolean.FALSE);
-        isGameOver.setValue(Boolean.FALSE);
+        gameState.set(GameState.RUNNING);
         inputHandler.setPaused(false);
         inputHandler.setGameOver(false);
         if (pauseButton != null) {
