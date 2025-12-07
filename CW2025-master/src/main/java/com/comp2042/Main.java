@@ -14,19 +14,23 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Step 1. Find and load Menu.fxml from the resources folder
+        // Find and load Menu.fxml from the resources folder
         // The file must be inside src/main/resources/
         URL location = getClass().getClassLoader().getResource("Menu.fxml");
         if (location == null) {
             throw new IllegalStateException("Menu.fxml not found in resources folder");
         }
 
-        // Step 2. Load the FXML and create its JavaFX structure (scene graph)
+        //Load the FXML and create its JavaFX structure (scene graph)
         FXMLLoader fxmlLoader = new FXMLLoader(location);
         Parent root = fxmlLoader.load();
 
-        // Step 3. Set up the window (Stage)
-        primaryStage.setTitle("TetrisJFX - Menu");
+        //Set up the window (Stage)
+        primaryStage.setTitle("Tetris");
+
+        //prevent resizing
+        primaryStage.setResizable(false);
+
 
         // Create a Scene that holds the FXML layout
         Scene scene = new Scene(root, 420, 640);

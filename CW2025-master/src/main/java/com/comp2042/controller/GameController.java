@@ -30,6 +30,8 @@ public class GameController implements InputEventListener {
         viewGuiController.bindScore(board.getScore().scoreProperty());
         // Bind level label to level property
         viewGuiController.bindLevel(board.getScore().levelProperty());
+        // Bind lines label to lines property
+        viewGuiController.bindLines(board.getScore().totalLinesProperty());
     }
 
     @Override
