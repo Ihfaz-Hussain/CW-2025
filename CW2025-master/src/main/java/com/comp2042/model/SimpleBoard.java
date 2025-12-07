@@ -21,10 +21,14 @@ public class SimpleBoard implements Board {
     private boolean holdUsedThisTurn;
 
     public SimpleBoard(int width, int height) {
+        this(width, height, new RandomBrickGenerator());
+    }
+
+    public SimpleBoard(int width, int height, BrickGenerator brickGenerator) {
         this.width = width;
         this.height = height;
         currentGameMatrix = new int[height][width];
-        brickGenerator = new RandomBrickGenerator();
+        this.brickGenerator = brickGenerator;
         brickRotator = new BrickRotator();
         score = new Score();
     }

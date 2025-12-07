@@ -81,6 +81,11 @@ public class GuiController implements Initializable {
         return gameState.get() == GameState.RUNNING;
     }
 
+
+    public boolean isRunning() {
+        return gameState.get() == GameState.RUNNING;
+    }
+
     public boolean isPaused() {
         return gameState.get() == GameState.PAUSED;
     }
@@ -229,6 +234,7 @@ public class GuiController implements Initializable {
 
         // Initial scale
         gameBoard.setScaleX(scaleBinding.get());
+        gameBoard.setScaleY(scaleBinding.get());
         gameBoard.setScaleY(scaleBinding.get());
     }
 
@@ -382,10 +388,12 @@ public class GuiController implements Initializable {
     }
 
     public Label getScorelabel() {
+
         return scoreLabel;
     }
 
     public void setScorelabel(Label scorelabel) {
+
         this.scoreLabel = scorelabel;
     }
 }

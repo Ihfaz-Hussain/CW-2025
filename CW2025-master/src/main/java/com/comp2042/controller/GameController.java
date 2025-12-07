@@ -8,7 +8,7 @@ import com.comp2042.model.*;
 
 public class GameController implements InputEventListener {
 
-    private Board board = new SimpleBoard(10, 25);
+    private Board board = new SimpleBoard(12, 27);
 
     private final GuiController viewGuiController;
     private final String playerName;
