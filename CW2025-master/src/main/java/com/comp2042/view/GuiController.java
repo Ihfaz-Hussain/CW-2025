@@ -372,10 +372,12 @@ public class GuiController implements Initializable {
     }
 
     public Label getScorelabel() {
+
         return scoreLabel;
     }
 
     public void setScorelabel(Label scorelabel) {
+
         this.scoreLabel = scorelabel;
     }
 }
