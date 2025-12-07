@@ -27,6 +27,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 
 import javafx.scene.text.Font;
+import com.comp2042.animation.BoardShake;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -154,6 +155,7 @@ public class GuiController implements Initializable {
                         "+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
+                BoardShake.play(gameBoard);
             }
             refreshBrick(downData.getViewData());
         }
@@ -168,6 +170,7 @@ public class GuiController implements Initializable {
                         "+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
+                BoardShake.play(gameBoard);
                 // Refresh background when rows are cleared - we need to get this from the board
                 // The GameController handles this internally, so we don't need to refresh here
             }
