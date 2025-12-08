@@ -3,6 +3,10 @@ package com.comp2042.logic;
 import com.comp2042.logic.bricks.Brick;
 import com.comp2042.model.NextShapeInfo;
 
+/**
+ * Manages the rotation state of a Tetris brick.
+ * Cycles through available shape matrices when the player rotates the piece.
+ */
 public class BrickRotator {
 
     private Brick brick;
@@ -26,7 +30,6 @@ public class BrickRotator {
         this.brick = brick;
         currentShape = 0;
     }
-
 
     public Brick getBrick() {
         return brick;

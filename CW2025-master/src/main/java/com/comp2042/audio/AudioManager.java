@@ -19,7 +19,7 @@ public class AudioManager {
             return;
         }
 
-        //try-catch block for fetching the sound file
+        // try-catch block for fetching the sound file
         try {
             URL soundUrl = AudioManager.class.getResource("/audio/tetris_theme.wav");
 
@@ -28,13 +28,13 @@ public class AudioManager {
                 return;
             }
 
-            //Open it as an audio stream
+            // Open it as an audio stream
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundUrl);
 
-            //Get a Clip (small audio player) from the system
+            // Get a Clip (small audio player) from the system
             bgClip = AudioSystem.getClip();
 
-            //Load the audio data into the Clip
+            // Load the audio data into the Clip
             bgClip.open(audioIn);
 
             // 5. Loop forever when played
@@ -80,6 +80,9 @@ public class AudioManager {
 
     /**
      * Check if the background music is currently playing.
+     *
+     * @return {@code true} if the background music is currently playing,
+     *         {@code false} otherwise
      */
     public static boolean isPlaying() {
         return bgClip != null && bgClip.isRunning();

@@ -1,5 +1,10 @@
 package com.comp2042.model;
 
+/**
+ * Contract for the Tetris game board.
+ * Defines operations for moving, rotating, and managing bricks on the playing
+ * field.
+ */
 public interface Board {
 
     boolean moveBrickDown();

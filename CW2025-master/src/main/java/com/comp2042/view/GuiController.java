@@ -32,6 +32,10 @@ import com.comp2042.animation.BoardShake;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * JavaFX controller for the main game view.
+ * Manages the game UI, handles keyboard input, and coordinates rendering.
+ */
 public class GuiController implements Initializable {
 
     private GameRenderer gameRenderer;
