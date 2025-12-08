@@ -1,7 +1,7 @@
 # Tetris - COMP2042 CW
 
 ## GitHub
-[Link to your GitHub repository here]
+https://github.com/Ihfaz-Hussain/CW-2025
 
 ## Compilation Instructions
 1. Ensure you have **Java 17+** and **Maven** installed.
