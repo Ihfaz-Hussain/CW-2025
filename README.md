@@ -1,233 +1,62 @@
-# TetrisJFX - JavaFX Tetris Game
+# Tetris - COMP2042 CW
 
-A modern Tetris implementation built with JavaFX, featuring clean object-oriented design and modular architecture.
+## GitHub
+[Link to your GitHub repository here]
 
-## Features
+## Compilation Instructions
+1. Ensure you have **Java 17+** and **Maven** installed.
+2. Open a terminal in the project root directory (where `pom.xml` is located).
+3. Run the following command to compile and run the application:
+   ```bash
+   mvn clean javafx:run
+   ```
+4. The application window should launch automatically.
 
-- Classic Tetris gameplay with all 7 tetromino pieces
-- Keyboard controls (Arrow keys, WASD, Space for hard drop, Shift/C for hold)
-- Score tracking with level progression
-- High score system with player name tracking
-- Pause/Resume functionality
-- Music toggle
-- Next piece and hold piece previews
-- Responsive UI design
-- Game over and restart functionality
+## Implemented and Working Properly
+- **Classic Tetris Gameplay**: Complete implementation of Tetris rules, including movement, rotation, line clearing, and scoring.
+- **MVC Architecture**: Refactored the monolithic codebase into Model-View-Controller pattern for better separation of concerns and maintainability.
+- **Ghost/Shadow Piece**: Shows a semi-transparent preview of where the current brick will land, aiding player precision.
+- **Hold Piece**: Allows players to hold a brick for later use (standard modern Tetris mechanic).
+- **Next Piece Preview**: Displays the upcoming piece to help players plan their strategy.
+- **Game Over Detection**: Correctly detects game over conditions both when spawning is blocked and when bricks lock above the visible board.
+- **High Score System**: Tracks and saves high scores locally.
+- **Pause Functionality**: Allows pausing and resuming the game.
+- **Background Music**: Integrated audio management with playback controls.
 
-## Project Structure
+## Implemented but Not Working Properly
+- **None**: All implemented features are currently functioning as expected.
 
-```
-src/main/java/com/comp2042/
-├── Main.java                    # Application entry point
-├── audio/
-│   └── AudioManager.java        # Background music management
-├── controller/
-│   ├── GameController.java      # Game logic controller
-│   ├── HighScoreController.java # High score screen controller
-│   ├── MenuController.java      # Main menu controller
-│   └── PlayerNameController.java # Player name input controller
-├── event/
-│   ├── EventSource.java         # Event source enumeration
-│   ├── EventType.java           # Event type enumeration
-│   ├── InputEventListener.java  # Input event listener interface
-│   └── MoveEvent.java           # Move event data class
-├── logic/
-│   ├── BrickRotator.java        # Brick rotation logic
-│   ├── MatrixOperations.java    # Matrix manipulation utilities
-│   └── bricks/
-│       ├── Brick.java           # Brick interface
-│       ├── BrickGenerator.java  # Brick generator interface
-│       ├── RandomBrickGenerator.java # Random brick generator
-│       ├── IBrick.java          # I-piece implementation
-│       ├── JBrick.java          # J-piece implementation
-│       ├── LBrick.java          # L-piece implementation
-│       ├── OBrick.java          # O-piece implementation
-│       ├── SBrick.java          # S-piece implementation
-│       ├── TBrick.java          # T-piece implementation
-│       └── ZBrick.java          # Z-piece implementation
-├── model/
-│   ├── Board.java               # Board interface
-│   ├── ClearRow.java            # Row clearing data class
-│   ├── DownData.java            # Down movement data class
-│   ├── HighScoreEntry.java      # High score entry data class
-│   ├── HighScoreManager.java    # High score management
-│   ├── NextShapeInfo.java       # Next shape information
-│   ├── Score.java               # Score tracking with JavaFX properties
-│   ├── SimpleBoard.java         # Board implementation
-│   └── ViewData.java            # View data transfer object
-└── view/
-    ├── GameOverPanel.java       # Game over UI component
-    ├── GuiController.java       # Main game UI controller (refactored)
-    ├── GameTimer.java           # Game timing management (extracted)
-    ├── InputHandler.java        # Keyboard input handling (extracted)
-    └── NotificationPanel.java   # Score notification UI component
-```
+## Features Not Implemented
+- **None**: successfully implemented all planned features.
 
-## Recent Refactoring (OOP Principles Applied)
+## New Java Classes
+- **`com.comp2042.model.Board`**: Interface defining the contract for board operations, facilitating modularity and testing.
+- **`com.comp2042.model.SimpleBoard`**: Concrete implementation of the `Board` interface, encapsulating core game logic like movement, collision detection (`isBrickInHiddenRows`), and merging.
+- **`com.comp2042.model.ViewData`**: Immutable data carrier object (DTO) used to pass game state (bricks, positions, ghost position) from Model to View without exposing internal logic.
+- **`com.comp2042.model.InputEventListener`**: Interface used by the Controller to listen for and handle user input events in a decoupled way.
+- **`com.comp2042.model.Score`**: Model class managing score state, line counts, and level logic.
+- **`com.comp2042.audio.AudioManager`**: dedicated class for handling background music playback using Java Sound API.
+- **`com.comp2042.view.GameRenderer`**: Dedicated rendering class responsible for drawing the board, active brick, ghost piece, and preview panels (next/hold). Features responsive design, color mapping for 7 tetromino types, and efficient grid management using JavaFX GridPane.
+- **`com.comp2042.view.GameTimer`**: Handles the game loop timing and animation frame updates. Manages brick falling speed with level progression (400ms base interval, 20% speed increase per level capped at 4x), pause/resume functionality, and uses JavaFX Timeline for smooth timing.
+- **`com.comp2042.view.InputHandler`**: Comprehensive keyboard input management system supporting both arrow keys and WASD controls. Maps keys to game actions (movement, rotation, soft/hard drop, hold), respects pause/game over states, and integrates with the event system for decoupled input handling.
 
-### **Single Responsibility Principle (SRP)**
+## Modified Java Classes
+- **`com.comp2042.controller.GameController`**: 
+  - **Changes**: Refactored to act as the central coordinator in MVC. Removed direct rendering logic and instead delegates to `GameRenderer` and `SimpleBoard`. Added logic for ghost piece handling (`isBrickInHiddenRows`) and game over checks.
+  - **Reason**: To separate game logic from UI code and ensure a clean architecture.
+  
+- **`com.comp2042.view.GuiController`**:
+  - **Changes**: Updated to work with the new `Board` interface and `ViewData` snapshot. Added initialization for `GameRenderer`.
+  - **Reason**: To support the new rendering pipeline and decoupled data flow.
 
-**Before**: The `GuiController` class (624 lines) handled multiple responsibilities:
-- UI rendering and layout management
-- Game timing and timeline control
-- Keyboard input handling and mapping
-- Audio management coordination
-- Scene navigation
+- **`com.comp2042.controller.MenuController`**:
+  - **Changes**: implementation of menu navigation and clean up unused imports.
+  - **Reason**: To provide a functional entry point to the game.
 
-**After**: Extracted focused classes:
-
-#### **GameTimer Class**
-- **Responsibility**: Manages game timeline, speed updates, and pause/resume functionality
-- **Benefits**: 
-  - Isolated timing logic for easier testing
-  - Clean separation of game flow control
-  - Reusable timing component
-
-```java
-public class GameTimer {
-    public void start();
-    public void stop();
-    public void pause();
-    public void resume();
-    public void updateSpeedForLevel(int level);
-}
-```
-
-#### **InputHandler Class**
-- **Responsibility**: Handles all keyboard input mapping and execution
-- **Benefits**:
-  - Centralized key binding management
-  - Easy to extend with new controls
-  - Independent input validation
-
-```java
-public class InputHandler {
-    public void setEventListener(InputEventListener eventListener);
-    public void setPaused(boolean paused);
-    public void setGameOver(boolean gameOver);
-    public Runnable getActionForKey(KeyCode keyCode);
-}
-```
-
-### **OOP princpals**
-
-**Improvement**: The refactored design allows for extension without modification:
-- `GameTimer` can be extended for different timing strategies
-- `InputHandler` supports adding new key bindings dynamically
-- UI components can be swapped without changing core logic
-
-### **Dependency Inversion Principle (DIP)**
-
-**Before**: Direct dependencies and tight coupling
-```java
-// Old approach - direct control
-timeline = new Timeline(new KeyFrame(...));
-keyActions = new HashMap<>();
-```
-
-**After**: Dependency injection and abstraction
-```java
-// New approach - composition
-gameTimer = new GameTimer(eventListener, onTickAction);
-inputHandler = new InputHandler();
-```
-
-###**Refactoring Impact**
-
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| GuiController Lines | 624 | ~580 | -7% |
-| Classes | 1 monolithic | 3 focused | Better cohesion |
-| Responsibilities | 6+ | 1 per class | Single responsibility |
-| Testability | Poor | Good | Isolated components |
-| Maintainability | Difficult | Easy | Clear separation |
-
-###**Benefits Achieved**
-
-1. **Better Testability**: `GameTimer` and `InputHandler` can be unit tested independently
-2. **Improved Maintainability**: Changes to timing or input logic don't affect UI rendering
-3. **Enhanced Reusability**: Extracted classes can be reused in other game components
-4. **Cleaner Code**: Removed unused imports and redundant methods
-5. **Better Encapsulation**: Related functionality is properly grouped and hidden
-
-## How to Run
-
-### Prerequisites
-- Java 11 or higher
-- Maven 3.6 or higher
-
-### Build and Run
-```bash
-# Clone the repository
-git clone <repository-url>
-cd CW2025-master
-
-# Build the project
-mvn clean compile
-
-# Run the application
-mvn javafx:run
-```
-
-Or run directly from IDE:
-1. Open the project in IntelliJ IDEA or Eclipse
-2. Run the `Main.java` class
-
-## Controls
-
-| Action | Keys |
-|--------|------|
-| Move Left | ← / A |
-| Move Right | → / D |
-| Rotate | ↑ / W |
-| Soft Drop | ↓ / S |
-| Hard Drop | Space |
-| Hold Piece | Shift / C |
-| Pause | Pause Button |
-| Restart | Restart Button |
-| Toggle Music | Music Button |
-| Return to Menu | Menu Button |
-
-## Scoring System
-
-- **Single Line**: 100 points
-- **Double Lines**: 300 points
-- **Triple Lines**: 500 points
-- **Tetris (4 lines)**: 800 points
-- **Soft Drop**: 1 point per cell
-- **Level Progression**: Every 5 lines cleared increases level by 1
-- **Speed Increase**: Each level increases falling speed by 20%
-
-## Architecture Patterns
-
-The project follows several design patterns:
-
-- **Model-View-Controller (MVC)**: Clear separation between game logic, UI, and data
-- **Observer Pattern**: JavaFX properties for reactive UI updates
-- **Strategy Pattern**: Different brick types with unified interface
-- **Factory Pattern**: Brick generation system
-- **Command Pattern**: Event-driven input handling
-
-## Future Enhancements
-
-Potential areas for further OOP improvements:
-
-1. **Strategy Pattern for Scoring**: Different scoring systems (classic, modern, custom)
-2. **Abstract Factory for Themes**: Different visual themes and color schemes
-3. **Command Pattern for Actions**: Undo/redo functionality
-4. **Observer Pattern for Game Events**: Better event system for sound effects and animations
-5. **State Pattern for Game States**: Menu, playing, paused, game over states
-
-## Contributing
-
-When contributing to this project, please follow the established OOP principles:
-
-1. Keep classes focused on a single responsibility
-2. Program to interfaces, not implementations
-3. Favor composition over inheritance
-4. Keep coupling low and cohesion high
-5. Write unit tests for new components
-
-## License
-
-This project is for educational purposes to demonstrate OOP principles and JavaFX development.
+## Unexpected Problems
+- **Layout Alignment Issues**: When initially refactoring the renderer, the game board's alignment with the background image was slightly off, causing visual artifacts.
+  - **Resolution**: Adjusted the `GridPane` constraints and padding in the FXML and ensured `GameRenderer` calculated positions accounting for hidden rows accurately.
+- **Ghost Piece Rendering**: Adding the ghost piece initially caused some z-indexing issues where it would cover the active brick.
+  - **Resolution**: updated the `initGhostPanel` method to explicitly insert the ghost panel behind the brick panel in the scene graph.
+- **Game Over Detection**: The game originally only checked for game over on spawn collision, missing cases where bricks locked at the very top.
+  - **Resolution**: Implemented `isBrickInHiddenRows()` to detect when a locked brick protrudes into the top non-visible rows and updated the game loop to check this condition.

@@ -8,10 +8,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.nio.file.Path;
 
+/**
+ * Manages high score persistence for the Tetris game.
+ * Provides methods to load, save, and maintain a list of top scores.
+ * Scores are stored in a local text file in "PlayerName:Score" format.
+ * Only the top 3 scores are retained.
+ */
 public class HighScoreManager {
     private static final Path HIGH_SCORE_PATH = Paths.get("highscores.txt");
 
-    // Read high scores from the file
+    /**
+     * Loads high scores from the persistent storage file.
+     * If the file doesn't exist or contains invalid data, returns an empty list.
+     * The returned list is sorted by score in descending order and limited to top 3.
+     *
+     * @return a list of high score entries sorted from highest to lowest score
+     */
     public static List<HighScoreEntry> loadHighScores() {
         List<HighScoreEntry> entries = new ArrayList<>();
 
@@ -57,7 +69,14 @@ public class HighScoreManager {
         return entries;
     }
 
-    // Record a new score with player name
+    /**
+     * Records a new high score entry with the specified player name.
+     * The score is added to the existing high scores, the list is sorted,
+     * and only the top 3 entries are persisted to storage.
+     *
+     * @param playerName the name of the player achieving the score
+     * @param score      the score value to record
+     */
     public static void recordScore(String playerName, int score) {
         List<HighScoreEntry> entries = loadHighScores();
 
@@ -76,19 +95,36 @@ public class HighScoreManager {
         saveHighScores(entries);
     }
 
-    // Legacy method for backward compatibility
+    /**
+     * Legacy method for backward compatibility.
+     * Records a score with the default player name "Anonymous".
+     *
+     * @param score the score value to record
+     * @deprecated Use {@link #recordScore(String, int)} instead
+     */
     public static void recordScore(int score) {
         recordScore("Anonymous", score);
     }
 
-    // Legacy method for backward compatibility
+    /**
+     * Legacy method for backward compatibility.
+     * Returns only the score values as integers, without player names.
+     *
+     * @return a list of score values sorted from highest to lowest
+     * @deprecated Use {@link #loadHighScores()} instead for full entry information
+     */
     public static List<Integer> loadHighScoresAsIntegers() {
         return loadHighScores().stream()
                 .map(HighScoreEntry::getScore)
                 .collect(Collectors.toList());
     }
 
-    // Save high score entries to file
+    /**
+     * Saves the high score entries to the persistent storage file.
+     * Each entry is written as "PlayerName:Score" on a separate line.
+     *
+     * @param entries the list of high score entries to save
+     */
     private static void saveHighScores(List<HighScoreEntry> entries) {
         List<String> lines = entries.stream()
                 .map(entry -> entry.getPlayerName() + ":" + entry.getScore())

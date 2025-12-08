@@ -8,14 +8,30 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class providing matrix operations for Tetris game logic.
+ * Includes methods for collision detection, matrix copying, and row clearing.
+ * This class cannot be instantiated as all methods are static.
+ */
 public class MatrixOperations {
 
-
-    //We don't want to instantiate this utility class
+    /**
+     * Private constructor to prevent instantiation of utility class.
+     */
     private MatrixOperations(){
 
     }
 
+    /**
+     * Checks if a brick placed at the specified coordinates would intersect
+     * with the game board matrix or go out of bounds.
+     *
+     * @param matrix the game board matrix to check against
+     * @param brick  the brick shape matrix to test
+     * @param x      the x (column) position to place the brick
+     * @param y      the y (row) position to place the brick
+     * @return {@code true} if there is a collision or out of bounds, {@code false} otherwise
+     */
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
         for (int row = 0; row < brick.length; row++) {
             for (int col = 0; col < brick[row].length; col++) {
@@ -29,6 +45,14 @@ public class MatrixOperations {
         return false;
     }
 
+    /**
+     * Checks if the specified coordinates are out of bounds for the given matrix.
+     *
+     * @param matrix the matrix to check bounds against
+     * @param targetX the x coordinate to test
+     * @param targetY the y coordinate to test
+     * @return {@code true} if coordinates are out of bounds, {@code false} otherwise
+     */
     private static boolean checkOutOfBound(int[][] matrix, int targetX, int targetY) {
         boolean returnValue = true;
         if (targetX >= 0 && targetY >= 0 && targetY < matrix.length && targetX < matrix[targetY].length) {
@@ -37,6 +61,13 @@ public class MatrixOperations {
         return returnValue;
     }
 
+    /**
+     * Creates a deep copy of a 2D integer array.
+     * Both the outer array and all inner arrays are copied.
+     *
+     * @param original the matrix to copy
+     * @return a deep copy of the original matrix
+     */
     public static int[][] copy(int[][] original) {
         int[][] myInt = new int[original.length][];
         for (int i = 0; i < original.length; i++) {
