@@ -4,6 +4,10 @@ import javax.sound.sampled.*;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * Manages background music playback for the game.
+ * Provides static methods to initialize, play, pause, and check audio state.
+ */
 public class AudioManager {
 
     // This is our global background music player

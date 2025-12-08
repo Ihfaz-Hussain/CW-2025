@@ -81,25 +81,43 @@ public class GuiController implements Initializable {
 
     private final ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
 
+    /**
+     * Checks if the game is currently running.
+     *
+     * @return {@code true} if the game state is RUNNING, {@code false} otherwise
+     */
     public boolean isRunning() {
         return gameState.get() == GameState.RUNNING;
     }
 
-
-    public boolean isRunning() {
-        return gameState.get() == GameState.RUNNING;
-    }
-
+    /**
+     * Checks if the game is currently paused.
+     *
+     * @return {@code true} if the game state is PAUSED, {@code false} otherwise
+     */
     public boolean isPaused() {
         return gameState.get() == GameState.PAUSED;
     }
 
+    /**
+     * Checks if the game is over.
+     *
+     * @return {@code true} if the game state is OVER, {@code false} otherwise
+     */
     public boolean isOver() {
         return gameState.get() == GameState.OVER;
     }
 
     // --- Initialization ---
 
+    /**
+     * Initializes the controller after the FXML has been loaded.
+     * Sets up fonts, input handlers, keyboard events, and the game renderer.
+     *
+     * @param location  the location used to resolve relative paths, or {@code null}
+     * @param resources the resources used to localize the root object, or
+     *                  {@code null}
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(
@@ -141,6 +159,13 @@ public class GuiController implements Initializable {
         gameRenderer = new GameRenderer(gamePanel, brickPanel, nextPiecePanel, holdPiecePanel);
     }
 
+    /**
+     * Initializes the game view with the board matrix and initial brick data.
+     * Sets up listeners for panel position changes and starts the game timer.
+     *
+     * @param boardMatrix the 2D array representing the game board
+     * @param brick       the initial brick view data
+     */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         this.currentViewData = brick;
         gameRenderer.initGameView(boardMatrix, brick);
@@ -156,6 +181,12 @@ public class GuiController implements Initializable {
         gameTimer.start();
     }
 
+    /**
+     * Updates the position of the brick panel based on current brick data.
+     * Does nothing if the game is paused.
+     *
+     * @param brick the current brick view data
+     */
     private void updateBrickPanelPosition(ViewData brick) {
         if (isPaused()) {
             return;
@@ -163,17 +194,33 @@ public class GuiController implements Initializable {
         gameRenderer.updateBrickPanelPosition(brick);
     }
 
+    /**
+     * Refreshes the display of the current falling brick.
+     *
+     * @param brick the updated brick view data
+     */
     public void refreshBrick(ViewData brick) {
         this.currentViewData = brick;
         gameRenderer.refreshBrick(brick);
     }
 
+    /**
+     * Refreshes the game background with the updated board state.
+     *
+     * @param board the 2D array representing the current board state
+     */
     public void refreshGameBackground(int[][] board) {
         gameRenderer.refreshGameBackground(board);
     }
 
     // --- Game Logic Delegates ---
 
+    /**
+     * Handles visual effects when lines are cleared.
+     * Shows score notification and triggers board shake animation.
+     *
+     * @param downData the result data from the down movement
+     */
     private void handleLineClearEffects(DownData downData) {
         if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
             NotificationPanel notificationPanel = new NotificationPanel(
@@ -184,6 +231,12 @@ public class GuiController implements Initializable {
         }
     }
 
+    /**
+     * Moves the current brick down by one row.
+     * Handles line clear effects and refreshes the display.
+     *
+     * @param event the move event containing event type and source
+     */
     public void moveDown(MoveEvent event) {
         if (isRunning()) {
             DownData downData = eventListener.onDownEvent(event);
@@ -193,6 +246,12 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
+    /**
+     * Instantly drops the current brick to the bottom.
+     * Handles line clear effects and spawns a new brick.
+     *
+     * @param event the move event containing event type and source
+     */
     public void hardDrop(MoveEvent event) {
         if (isRunning()) {
             DownData downData = eventListener.onHardDropEvent(event);
@@ -205,12 +264,23 @@ public class GuiController implements Initializable {
 
     // --- Input & Setup ---
 
+    /**
+     * Sets the event listener for handling game input events.
+     *
+     * @param eventListener the listener to handle input events
+     */
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
         inputHandler.setEventListener(eventListener);
         inputHandler.setGuiController(this);
     }
 
+    /**
+     * Binds the game board to the scene for responsive scaling.
+     * Adjusts scale based on window dimensions while maintaining aspect ratio.
+     *
+     * @param scene the JavaFX scene to bind to
+     */
     public void bindToScene(Scene scene) {
         // Make game board responsive to window size using CSS scaling
         DoubleBinding scaleBinding = Bindings.createDoubleBinding(() -> {
@@ -244,6 +314,11 @@ public class GuiController implements Initializable {
 
     // --- UI Binding ---
 
+    /**
+     * Binds the score label to an integer property for automatic updates.
+     *
+     * @param integerProperty the score property to bind to
+     */
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null && integerProperty != null) {
             scoreLabel.textProperty().bind(
@@ -251,6 +326,11 @@ public class GuiController implements Initializable {
         }
     }
 
+    /**
+     * Binds the level label to a level property and adjusts game speed accordingly.
+     *
+     * @param levelProperty the level property to bind to
+     */
     public void bindLevel(IntegerProperty levelProperty) {
         if (levelLabel != null && levelProperty != null) {
 
@@ -269,6 +349,11 @@ public class GuiController implements Initializable {
         }
     }
 
+    /**
+     * Binds the lines label to a lines property for automatic updates.
+     *
+     * @param linesProperty the lines cleared property to bind to
+     */
     public void bindLines(IntegerProperty linesProperty) {
         if (linesLabel != null && linesProperty != null) {
             linesLabel.textProperty().bind(
@@ -278,6 +363,10 @@ public class GuiController implements Initializable {
 
     // --- Game Lifecycle ---
 
+    /**
+     * Triggers the game over state.
+     * Stops the timer, shows the game over panel, and updates state.
+     */
     public void gameOver() {
         gameTimer.stop();
         gameOverPanel.setVisible(true);
@@ -285,6 +374,11 @@ public class GuiController implements Initializable {
         inputHandler.setGameOver(true);
     }
 
+    /**
+     * Starts a new game, resetting the board and timer.
+     *
+     * @param actionEvent the action event from the UI button
+     */
     public void newGame(ActionEvent actionEvent) {
         gameTimer.stop();
         gameOverPanel.setVisible(false);
@@ -297,6 +391,12 @@ public class GuiController implements Initializable {
         inputHandler.setGameOver(false);
     }
 
+    /**
+     * Toggles the pause state of the game.
+     * Does nothing if the game is already over.
+     *
+     * @param actionEvent the action event from the UI button
+     */
     public void pauseGame(ActionEvent actionEvent) {
         // Do nothing if the game is already over
         if (isOver()) {
@@ -326,6 +426,11 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
+    /**
+     * Toggles the background music on or off.
+     *
+     * @param actionEvent the action event from the UI button
+     */
     public void toggleMusic(ActionEvent actionEvent) {
         if (AudioManager.isPlaying()) {
             AudioManager.pauseBackground();
@@ -343,6 +448,12 @@ public class GuiController implements Initializable {
 
     // --- Navigation ---
 
+    /**
+     * Returns to the main menu screen.
+     * Stops the game timer and loads the menu FXML.
+     *
+     * @param actionEvent the action event from the UI button
+     */
     public void returnToMenu(ActionEvent actionEvent) {
         try {
             // Stop the game timer
@@ -370,6 +481,12 @@ public class GuiController implements Initializable {
         }
     }
 
+    /**
+     * Restarts the current game from the beginning.
+     * Resets the board, score, and timer.
+     *
+     * @param actionEvent the action event from the UI button
+     */
     public void restartGame(ActionEvent actionEvent) {
         // Stop the current game
         gameTimer.stop();
@@ -391,13 +508,21 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
+    /**
+     * Gets the score label component.
+     *
+     * @return the score label
+     */
     public Label getScorelabel() {
-
         return scoreLabel;
     }
 
+    /**
+     * Sets the score label component.
+     *
+     * @param scorelabel the score label to set
+     */
     public void setScorelabel(Label scorelabel) {
-
         this.scoreLabel = scorelabel;
     }
 }
