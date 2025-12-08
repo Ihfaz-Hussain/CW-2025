@@ -1,7 +1,7 @@
 # Tetris - COMP2042 CW
 
 ## GitHub
-[Link to your GitHub repository here]
+https://github.com/Ihfaz-Hussain/CW-2025
 
 ## Compilation Instructions
 1. Ensure you have **Java 17+** and **Maven** installed.
@@ -30,9 +30,7 @@
 - **None**: successfully implemented all planned features.
 
 ## New Java Classes
-- **`com.comp2042.model.Board`**: Interface defining the contract for board operations, facilitating modularity and testing.
 - **`com.comp2042.model.SimpleBoard`**: Concrete implementation of the `Board` interface, encapsulating core game logic like movement, collision detection (`isBrickInHiddenRows`), and merging.
-- **`com.comp2042.model.ViewData`**: Immutable data carrier object (DTO) used to pass game state (bricks, positions, ghost position) from Model to View without exposing internal logic.
 - **`com.comp2042.model.InputEventListener`**: Interface used by the Controller to listen for and handle user input events in a decoupled way.
 - **`com.comp2042.model.Score`**: Model class managing score state, line counts, and level logic.
 - **`com.comp2042.audio.AudioManager`**: dedicated class for handling background music playback using Java Sound API.
