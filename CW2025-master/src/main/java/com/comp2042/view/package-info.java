@@ -9,6 +9,5 @@
  * <li>{@link com.comp2042.view.GameRenderer} - Helper class responsible for
  * drawing the grid and bricks.</li>
  * </ul>
- * </p>
  */
 package com.comp2042.view;

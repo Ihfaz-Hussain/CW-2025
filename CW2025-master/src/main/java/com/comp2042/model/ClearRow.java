@@ -2,6 +2,11 @@ package com.comp2042.model;
 
 import com.comp2042.logic.MatrixOperations;
 
+/**
+ * Result of a row-clearing operation.
+ * Contains the number of lines removed, the updated board matrix, and bonus
+ * score.
+ */
 public final class ClearRow {
 
     private final int linesRemoved;

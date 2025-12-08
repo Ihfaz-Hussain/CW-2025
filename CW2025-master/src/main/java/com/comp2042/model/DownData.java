@@ -1,5 +1,9 @@
 package com.comp2042.model;
 
+/**
+ * Result of a downward move event.
+ * Bundles any cleared row data with the updated view data for rendering.
+ */
 public final class DownData {
     private final ClearRow clearRow;
     private final ViewData viewData;

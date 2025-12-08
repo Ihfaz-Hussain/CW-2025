@@ -6,6 +6,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * Responsible for rendering the game board, active brick, and preview panels.
+ * Draws and updates the visual representation of the game state.
+ */
 public class GameRenderer {
 
     private static final int BRICK_SIZE = 30;

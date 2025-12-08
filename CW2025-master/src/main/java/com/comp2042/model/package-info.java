@@ -9,6 +9,5 @@
  * <li>{@link com.comp2042.model.ViewData} - Immutable snapshot of the game
  * state for rendering.</li>
  * </ul>
- * </p>
  */
 package com.comp2042.model;
