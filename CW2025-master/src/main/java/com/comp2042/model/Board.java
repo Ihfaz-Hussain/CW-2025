@@ -86,4 +86,13 @@ public interface Board {
      * Starts a new game by resetting the board and score.
      */
     void newGame();
+
+    /**
+     * Checks if the current brick position is in the hidden rows (top boundary).
+     * Used to detect game over condition when brick locks at the top.
+     *
+     * @return {@code true} if any part of the brick is in hidden rows,
+     *         {@code false} otherwise
+     */
+    boolean isBrickInHiddenRows();
 }

@@ -14,15 +14,18 @@ public class GameRenderer {
 
     private static final int BRICK_SIZE = 30;
     private static final int BRICK_WIDTH = 33;
-    private static final int HIDDEN_ROWS = 2; // rows at the top we don’t show
+    private static final int HIDDEN_ROWS = 2; // rows at the top we don't show
+    private static final double GHOST_OPACITY = 0.3; // Shadow piece transparency
 
     private final GridPane gamePanel;
     private final GridPane brickPanel;
     private final GridPane nextPiecePanel;
     private final GridPane holdPiecePanel;
+    private GridPane ghostPanel; // Shadow/ghost piece panel
 
     private Rectangle[][] displayMatrix;
     private Rectangle[][] rectangles;
+    private Rectangle[][] ghostRectangles; // Shadow piece rectangles
     private Rectangle[][] nextPieceRectangles;
     private Rectangle[][] holdPieceRectangles;
 
@@ -99,12 +102,55 @@ public class GameRenderer {
         brickPanel.setManaged(false);
         updateBrickPanelPosition(brick);
 
+        // Initialize ghost/shadow panel
+        initGhostPanel(brick);
+
         // Initialize preview panels (4x4 grid for max tetromino size)
         initializePreviewPanel(nextPiecePanel, 4, 4);
         initializePreviewPanel(holdPiecePanel, 4, 4);
 
         // Update preview panels with initial data
         updatePreviewPanels(brick);
+    }
+
+    /**
+     * Initializes the ghost/shadow panel showing where the brick will land.
+     *
+     * @param brick the initial brick view data
+     */
+    private void initGhostPanel(ViewData brick) {
+        ghostPanel = new GridPane();
+        ghostPanel.setManaged(false);
+        // Match brickPanel's gap settings for alignment
+        ghostPanel.setHgap(brickPanel.getHgap());
+        ghostPanel.setVgap(brickPanel.getVgap());
+
+        int[][] brickData = brick.getBrickData();
+        ghostRectangles = new Rectangle[brickData.length][brickData[0].length];
+
+        for (int i = 0; i < brickData.length; i++) {
+            for (int j = 0; j < brickData[i].length; j++) {
+                Rectangle rect = new Rectangle(BRICK_WIDTH, BRICK_SIZE);
+                rect.setFill(getGhostColor(brickData[i][j]));
+                rect.setArcHeight(9);
+                rect.setArcWidth(9);
+                ghostRectangles[i][j] = rect;
+                ghostPanel.add(rect, j, i);
+            }
+        }
+
+        // Add ghost panel behind brickPanel
+        if (brickPanel.getParent() instanceof javafx.scene.layout.Pane) {
+            javafx.scene.layout.Pane parent = (javafx.scene.layout.Pane) brickPanel.getParent();
+            int brickIndex = parent.getChildren().indexOf(brickPanel);
+            if (brickIndex >= 0) {
+                parent.getChildren().add(brickIndex, ghostPanel);
+            } else {
+                parent.getChildren().add(ghostPanel);
+            }
+        }
+
+        updateGhostPosition(brick);
     }
 
     /**
@@ -143,8 +189,59 @@ public class GameRenderer {
         // and move it to the correct place over the main rectangle
         updateBrickPanelPosition(brick);
 
+        // Update ghost/shadow position
+        updateGhostPosition(brick);
+
         // Update preview panels
         updatePreviewPanels(brick);
+    }
+
+    /**
+     * Updates the ghost/shadow piece position and colors.
+     *
+     * @param brick the current brick view data
+     */
+    private void updateGhostPosition(ViewData brick) {
+        if (ghostPanel == null || ghostRectangles == null) {
+            return;
+        }
+
+        int[][] brickData = brick.getBrickData();
+
+        // Update ghost shape colors
+        for (int i = 0; i < brickData.length && i < ghostRectangles.length; i++) {
+            for (int j = 0; j < brickData[i].length && j < ghostRectangles[i].length; j++) {
+                ghostRectangles[i][j].setFill(getGhostColor(brickData[i][j]));
+            }
+        }
+
+        // Position ghost at landing row - use same calculation as brickPanel
+        double cellWidth = BRICK_WIDTH + ghostPanel.getHgap();
+        double cellHeight = BRICK_SIZE + ghostPanel.getVgap();
+
+        double x = gamePanel.getLayoutX() + brick.getxPosition() * cellWidth;
+        double y = gamePanel.getLayoutY() + (brick.getGhostYPosition() - HIDDEN_ROWS) * cellHeight;
+
+        ghostPanel.setLayoutX(x);
+        ghostPanel.setLayoutY(y);
+    }
+
+    /**
+     * Gets a semi-transparent ghost color for a brick color code.
+     *
+     * @param colorCode the color code from the brick matrix
+     * @return the semi-transparent ghost color
+     */
+    private Paint getGhostColor(int colorCode) {
+        if (colorCode == 0) {
+            return Color.TRANSPARENT;
+        }
+        Paint basePaint = getFillColor(colorCode);
+        if (basePaint instanceof Color) {
+            Color base = (Color) basePaint;
+            return new Color(base.getRed(), base.getGreen(), base.getBlue(), GHOST_OPACITY);
+        }
+        return Color.color(1, 1, 1, GHOST_OPACITY);
     }
 
     /**

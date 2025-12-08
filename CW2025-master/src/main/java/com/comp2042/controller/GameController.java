@@ -64,6 +64,9 @@ public class GameController implements InputEventListener {
         boolean canMove = board.moveBrickDown();
         ClearRow clearRow = null;
         if (!canMove) {
+            // Check if brick locked in hidden rows (top boundary) => game over
+            boolean lockedAtTop = board.isBrickInHiddenRows();
+
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
 
@@ -73,8 +76,8 @@ public class GameController implements InputEventListener {
                 board.getScore().addLines(clearRow.getLinesRemoved());
             }
 
-            // If we cannot place a new brick → game over
-            if (board.createNewBrick()) {
+            // Game over if: brick locked at top OR new brick cannot spawn
+            if (lockedAtTop || board.createNewBrick()) {
 
                 // Get the final score from the Score object
                 int finalScore = board.getScore().getScore();
@@ -116,6 +119,9 @@ public class GameController implements InputEventListener {
             // no-op; board.moveBrickDown() updates currentOffset inside SimpleBoard
         }
 
+        // Check if brick locked in hidden rows (top boundary) => game over
+        boolean lockedAtTop = board.isBrickInHiddenRows();
+
         // Lock the brick into the background and clear completed rows
         board.mergeBrickToBackground();
         clearRow = board.clearRows();
@@ -124,8 +130,8 @@ public class GameController implements InputEventListener {
             board.getScore().addLines(clearRow.getLinesRemoved());
         }
 
-        // Spawn a new brick; if we can't, it's game over
-        if (board.createNewBrick()) {
+        // Game over if: brick locked at top OR new brick cannot spawn
+        if (lockedAtTop || board.createNewBrick()) {
             // Save the high score with player name
             int finalScore = board.getScore().getScore();
             HighScoreManager.recordScore(playerName, finalScore);
