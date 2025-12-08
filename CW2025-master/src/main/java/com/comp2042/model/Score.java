@@ -16,29 +16,49 @@ public final class Score {
     // Current level (starts at level 1)
     private final IntegerProperty level = new SimpleIntegerProperty(1);
 
-    // scoring
+    /**
+     * Gets the observable score property for UI binding.
+     *
+     * @return the score property
+     */
     public IntegerProperty scoreProperty() {
         return score;
     }
 
+    /**
+     * Adds points to the current score.
+     *
+     * @param i the number of points to add
+     */
     public void add(int i) {
         // Increase score by i
         score.setValue(score.getValue() + i);
     }
 
-    // Lines and level
-
+    /**
+     * Gets the observable level property for UI binding.
+     *
+     * @return the level property
+     */
     public IntegerProperty levelProperty() {
         return level;
     }
 
+    /**
+     * Gets the observable total lines property for UI binding.
+     *
+     * @return the total lines property
+     */
     public IntegerProperty totalLinesProperty() {
         return totalLines;
     }
 
-    // Whenever lines ie cleared add total lines cleared
-    // Updates the level based on the total lines cleared
-
+    /**
+     * Adds cleared lines to the total and updates the level accordingly.
+     * Every 5 lines cleared increases the level by 1.
+     *
+     * @param lines the number of lines cleared
+     */
     public void addLines(int lines) {
         if (lines <= 0)
             return;
@@ -54,12 +74,20 @@ public final class Score {
         level.set(newLevel);
     }
 
+    /**
+     * Resets the score, lines, and level to starting values.
+     */
     public void reset() {
         score.setValue(0);
         totalLines.setValue(0);
         level.setValue(1);
     }
 
+    /**
+     * Gets the current score value.
+     *
+     * @return the current score
+     */
     public int getScore() {
         return score.get();
     }

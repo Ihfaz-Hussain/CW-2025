@@ -26,6 +26,14 @@ public class GameRenderer {
     private Rectangle[][] nextPieceRectangles;
     private Rectangle[][] holdPieceRectangles;
 
+    /**
+     * Creates a new GameRenderer with references to the UI panels.
+     *
+     * @param gamePanel      the main game grid panel
+     * @param brickPanel     the panel for the active falling brick
+     * @param nextPiecePanel the panel showing the next piece preview
+     * @param holdPiecePanel the panel showing the held piece
+     */
     public GameRenderer(GridPane gamePanel, GridPane brickPanel, GridPane nextPiecePanel, GridPane holdPiecePanel) {
         this.gamePanel = gamePanel;
         this.brickPanel = brickPanel;
@@ -33,6 +41,13 @@ public class GameRenderer {
         this.holdPiecePanel = holdPiecePanel;
     }
 
+    /**
+     * Initializes the game view with the board matrix and initial brick.
+     * Creates the grid of rectangles for the board and falling brick.
+     *
+     * @param boardMatrix the 2D array representing the game board
+     * @param brick       the initial brick view data
+     */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         // Create rectangle grid for the visible rows (board rows 2..end)
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
@@ -92,6 +107,12 @@ public class GameRenderer {
         updatePreviewPanels(brick);
     }
 
+    /**
+     * Updates the position of the brick panel to match the brick's board
+     * coordinates.
+     *
+     * @param brick the current brick view data with position information
+     */
     public void updateBrickPanelPosition(ViewData brick) {
         double cellWidth = BRICK_WIDTH + brickPanel.getHgap();
         double cellHeight = BRICK_SIZE + brickPanel.getVgap();
@@ -106,6 +127,11 @@ public class GameRenderer {
         brickPanel.setLayoutY(y);
     }
 
+    /**
+     * Refreshes the display of the falling brick and updates preview panels.
+     *
+     * @param brick the updated brick view data
+     */
     public void refreshBrick(ViewData brick) {
         // update brick shape colors
         for (int i = 0; i < brick.getBrickData().length; i++) {
@@ -121,6 +147,11 @@ public class GameRenderer {
         updatePreviewPanels(brick);
     }
 
+    /**
+     * Refreshes the game board background with the current board state.
+     *
+     * @param board the 2D array representing the locked pieces on the board
+     */
     public void refreshGameBackground(int[][] board) {
         for (int i = HIDDEN_ROWS; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -129,6 +160,13 @@ public class GameRenderer {
         }
     }
 
+    /**
+     * Initializes a preview panel with empty rectangles.
+     *
+     * @param panel the GridPane to initialize
+     * @param rows  the number of rows in the preview grid
+     * @param cols  the number of columns in the preview grid
+     */
     private void initializePreviewPanel(GridPane panel, int rows, int cols) {
         if (panel == null)
             return;
@@ -155,6 +193,11 @@ public class GameRenderer {
         }
     }
 
+    /**
+     * Updates both next piece and hold piece preview panels.
+     *
+     * @param viewData the current view data containing preview information
+     */
     private void updatePreviewPanels(ViewData viewData) {
         if (viewData == null)
             return;
@@ -175,6 +218,12 @@ public class GameRenderer {
         }
     }
 
+    /**
+     * Updates a single preview panel with brick data, centered in the grid.
+     *
+     * @param previewRectangles the 2D array of rectangles to update
+     * @param brickData         the brick shape data to display
+     */
     private void updatePreviewPanel(Rectangle[][] previewRectangles, int[][] brickData) {
         // Clear all rectangles first
         clearPreviewPanel(previewRectangles);
@@ -197,6 +246,11 @@ public class GameRenderer {
         }
     }
 
+    /**
+     * Clears all rectangles in a preview panel to transparent.
+     *
+     * @param previewRectangles the 2D array of rectangles to clear
+     */
     private void clearPreviewPanel(Rectangle[][] previewRectangles) {
         for (int i = 0; i < previewRectangles.length; i++) {
             for (int j = 0; j < previewRectangles[i].length; j++) {
@@ -205,12 +259,24 @@ public class GameRenderer {
         }
     }
 
+    /**
+     * Sets the fill color and style of a rectangle based on a color code.
+     *
+     * @param color     the color code from the board matrix
+     * @param rectangle the rectangle to update
+     */
     private void setRectangleData(int color, Rectangle rectangle) {
         rectangle.setFill(getFillColor(color));
         rectangle.setArcHeight(9);
         rectangle.setArcWidth(9);
     }
 
+    /**
+     * Maps a color code to a Paint color for rendering bricks.
+     *
+     * @param i the color code (0-7 for different brick types)
+     * @return the corresponding Paint color
+     */
     private Paint getFillColor(int i) {
         Paint returnPaint;
         switch (i) {

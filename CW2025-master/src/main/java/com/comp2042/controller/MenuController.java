@@ -1,25 +1,21 @@
 package com.comp2042.controller;
 
 import com.comp2042.view.GuiController;
-import com.comp2042.model.HighScoreManager;
 import com.comp2042.audio.AudioManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.ToggleButton;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.net.URL;
-import java.util.List;
 
+/**
+ * Controller for the main menu screen.
+ * Handles navigation to game, high scores, music toggle, and exit.
+ */
 public class MenuController {
 
     @FXML
@@ -31,16 +27,27 @@ public class MenuController {
     @FXML
     private Button exitButton;
 
-    // PLAY button → show player name dialog then start game
+    /**
+     * Handles the play button click event.
+     * Shows the player name dialog and starts the game if a name is entered.
+     *
+     * @param event the action event from the button click
+     * @throws Exception if FXML loading fails
+     */
     @FXML
     private void onPlayClicked(ActionEvent event) throws Exception {
         String playerName = showPlayerNameDialog();
-        
+
         if (playerName != null) {
             startGame(playerName);
         }
     }
-    
+
+    /**
+     * Displays the player name input dialog.
+     *
+     * @return the entered player name, or {@code null} if cancelled
+     */
     private String showPlayerNameDialog() {
         try {
             // Load the player name dialog
@@ -48,35 +55,41 @@ public class MenuController {
             if (location == null) {
                 throw new IllegalStateException("PlayerNameDialog.fxml not found");
             }
-            
+
             FXMLLoader loader = new FXMLLoader(location);
             Parent root = loader.load();
             PlayerNameController controller = loader.getController();
-            
+
             // Create a new stage for the dialog
             Stage dialogStage = new Stage();
             dialogStage.setTitle("TetrisJFX - Player Name");
             dialogStage.setScene(new Scene(root, 400, 300));
             dialogStage.setResizable(false);
-            
+
             // Copy stylesheets from current scene
             dialogStage.getScene().getStylesheets().addAll(playButton.getScene().getStylesheets());
-            
+
             // Show dialog and wait for it to close
             dialogStage.showAndWait();
-            
+
             // Return player name if game was started
             if (controller.isGameStarted()) {
                 return controller.getPlayerName();
             }
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         return null;
     }
-    
+
+    /**
+     * Starts a new game with the specified player name.
+     * Loads the game layout and initializes the game controller.
+     *
+     * @param playerName the name of the player
+     */
     private void startGame(String playerName) {
         try {
             // try to load file safely from resources
@@ -102,13 +115,18 @@ public class MenuController {
             // Center the window on screen
             stage.centerOnScreen();
             stage.show();
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    // HIGH SCORE button
+    /**
+     * Handles the high score button click event.
+     * Navigates to the high score view screen.
+     *
+     * @param event the action event from the button click
+     */
     @FXML
     private void onHighScoreClicked(ActionEvent event) {
         try {
@@ -117,30 +135,35 @@ public class MenuController {
             if (location == null) {
                 throw new IllegalStateException("HighScoreView.fxml not found");
             }
-            
+
             FXMLLoader loader = new FXMLLoader(location);
             Parent root = loader.load();
-            
+
             // Get the current stage and switch to high score scene
             Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
             Scene highScoreScene = new Scene(root, 800, 800);
-            
+
             // Copy stylesheets from current scene
             highScoreScene.getStylesheets().addAll(((Button) event.getSource()).getScene().getStylesheets());
-            
+
             stage.setScene(highScoreScene);
             stage.setTitle("TetrisJFX - High Scores");
-            
+
             // Center the window on screen
             stage.centerOnScreen();
             stage.show();
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    // Music Controller
+    /**
+     * Handles the music toggle button event.
+     * Turns background music on or off based on toggle state.
+     *
+     * @param event the action event from the toggle button
+     */
     @FXML
     private void onMusicToggle(ActionEvent event) {
         boolean isOn = musicToggle.isSelected();
@@ -156,7 +179,12 @@ public class MenuController {
         }
     }
 
-    // EXIT button → close the app
+    /**
+     * Handles the exit button click event.
+     * Closes the application window.
+     *
+     * @param event the action event from the button click
+     */
     @FXML
     private void onExitClicked(ActionEvent event) {
         Stage stage = (Stage) exitButton.getScene().getWindow();

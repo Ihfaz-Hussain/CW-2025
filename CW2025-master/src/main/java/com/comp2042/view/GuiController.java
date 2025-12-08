@@ -86,10 +86,6 @@ public class GuiController implements Initializable {
     }
 
 
-    public boolean isRunning() {
-        return gameState.get() == GameState.RUNNING;
-    }
-
     public boolean isPaused() {
         return gameState.get() == GameState.PAUSED;
     }
@@ -98,7 +94,7 @@ public class GuiController implements Initializable {
         return gameState.get() == GameState.OVER;
     }
 
-    // --- Initialization ---
+    //Initialization
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -172,7 +168,7 @@ public class GuiController implements Initializable {
         gameRenderer.refreshGameBackground(board);
     }
 
-    // --- Game Logic Delegates ---
+    // Game Logic
 
     private void handleLineClearEffects(DownData downData) {
         if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
@@ -203,7 +199,7 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
-    // --- Input & Setup ---
+    //Input & Setup
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
