@@ -4,33 +4,35 @@ import com.comp2042.logic.MatrixOperations;
 
 /**
  * Immutable snapshot of the current game state for rendering.
- * Contains the active brick, its position, and preview data for next/hold
- * pieces.
+ * Contains the active brick, its position, ghost position, and preview data.
  */
 public final class ViewData {
 
     private final int[][] brickData;
     private final int xPosition;
     private final int yPosition;
+    private final int ghostYPosition;
     private final int[][] nextBrickData;
     private final int[][] holdBrickData;
 
     /**
      * Creates a new ViewData snapshot.
      *
-     * @param brickData     the current brick shape matrix
-     * @param xPosition     the x (column) position of the brick
-     * @param yPosition     the y (row) position of the brick
-     * @param nextBrickData the next brick shape matrix
-     * @param holdBrickData the held brick shape matrix, or {@code null} if none
+     * @param brickData      the current brick shape matrix
+     * @param xPosition      the x (column) position of the brick
+     * @param yPosition      the y (row) position of the brick
+     * @param ghostYPosition the y position where the shadow/ghost appears
+     * @param nextBrickData  the next brick shape matrix
+     * @param holdBrickData  the held brick shape matrix, or {@code null} if none
      */
-    public ViewData(int[][] brickData, int xPosition, int yPosition, int[][] nextBrickData, int[][] holdBrickData) {
+    public ViewData(int[][] brickData, int xPosition, int yPosition, int ghostYPosition,
+            int[][] nextBrickData, int[][] holdBrickData) {
         this.brickData = brickData;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
+        this.ghostYPosition = ghostYPosition;
         this.nextBrickData = nextBrickData;
         this.holdBrickData = holdBrickData;
-
     }
 
     /**
@@ -58,6 +60,15 @@ public final class ViewData {
      */
     public int getyPosition() {
         return yPosition;
+    }
+
+    /**
+     * Gets the y (row) position where the ghost/shadow piece appears.
+     *
+     * @return the ghost row index (where brick would land)
+     */
+    public int getGhostYPosition() {
+        return ghostYPosition;
     }
 
     /**

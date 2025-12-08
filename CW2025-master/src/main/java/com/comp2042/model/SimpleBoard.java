@@ -116,12 +116,31 @@ public class SimpleBoard implements Board {
         return currentGameMatrix;
     }
 
+    /**
+     * Calculates where the current brick would land if dropped straight down.
+     *
+     * @return the y (row) position where the brick will land
+     */
+    private int calculateGhostPosition() {
+        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
+        int ghostY = (int) currentOffset.getY();
+
+        // Move down until we hit something
+        while (!MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(),
+                (int) currentOffset.getX(), ghostY + 1)) {
+            ghostY++;
+        }
+
+        return ghostY;
+    }
+
     @Override
     public ViewData getViewData() {
         int[][] holdShape = heldBrick == null ? null : heldBrick.getShapeMatrix().get(0);
-        // Provide GUI with current, next, and held shapes in one snapshot
+        int ghostY = calculateGhostPosition();
+        // Provide GUI with current, next, held shapes and ghost position
         return new ViewData(brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY(),
-                brickGenerator.getNextBrick().getShapeMatrix().get(0), holdShape);
+                ghostY, brickGenerator.getNextBrick().getShapeMatrix().get(0), holdShape);
     }
 
     @Override
@@ -172,5 +191,25 @@ public class SimpleBoard implements Board {
         score.reset();
         heldBrick = null;
         createNewBrick();
+    }
+
+    @Override
+    public boolean isBrickInHiddenRows() {
+        // Hidden rows are rows 0 and 1 (not visible to player)
+        // Check if any part of the current brick is in these rows
+        int[][] shape = brickRotator.getCurrentShape();
+        int brickY = (int) currentOffset.getY();
+
+        for (int i = 0; i < shape.length; i++) {
+            for (int j = 0; j < shape[i].length; j++) {
+                if (shape[i][j] != 0) {
+                    int actualRow = brickY + i;
+                    if (actualRow < 2) { // Row 0 or 1 are hidden
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
