@@ -88,6 +88,7 @@ class HighScoreManagerTest {
 
     // 5. Test legacy recordScore with just integer uses "Anonymous"
     @Test
+    @SuppressWarnings("deprecation")
     void testLegacyRecordScoreUsesAnonymous() {
         HighScoreManager.recordScore(999);
 
@@ -99,6 +100,7 @@ class HighScoreManagerTest {
 
     // 6. Test loadHighScoresAsIntegers returns only scores
     @Test
+    @SuppressWarnings("deprecation")
     void testLoadHighScoresAsIntegers() {
         HighScoreManager.recordScore("X", 300);
         HighScoreManager.recordScore("Y", 200);

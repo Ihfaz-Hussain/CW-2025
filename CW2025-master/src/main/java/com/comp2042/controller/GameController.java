@@ -82,8 +82,8 @@ public class GameController implements InputEventListener {
                 // Get the final score from the Score object
                 int finalScore = board.getScore().getScore();
 
-                // Tell HighScoreManager to record this score
-                HighScoreManager.recordScore(finalScore);
+                // Tell HighScoreManager to record this score with player name
+                HighScoreManager.recordScore(playerName, finalScore);
 
                 // Show game over panel
                 viewGuiController.gameOver();

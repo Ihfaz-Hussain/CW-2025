@@ -8,6 +8,11 @@ import com.comp2042.logic.bricks.RandomBrickGenerator;
 
 import java.awt.*;
 
+/**
+ * Concrete implementation of the Board interface for Tetris gameplay.
+ * Manages the game board state, brick movements, collision detection,
+ * line clearing, and scoring. This class encapsulates all core game logic.
+ */
 public class SimpleBoard implements Board {
 
     private final int width;
@@ -20,10 +25,24 @@ public class SimpleBoard implements Board {
     private Brick heldBrick;
     private boolean holdUsedThisTurn;
 
+    /**
+     * Creates a new SimpleBoard with the specified dimensions and default brick generator.
+     *
+     * @param width  the board width in columns (typically 10)
+     * @param height the board height in rows (typically 25)
+     */
     public SimpleBoard(int width, int height) {
         this(width, height, new RandomBrickGenerator());
     }
 
+    /**
+     * Creates a new SimpleBoard with the specified dimensions and custom brick generator.
+     * Useful for testing with deterministic brick sequences.
+     *
+     * @param width         the board width in columns (typically 10)
+     * @param height        the board height in rows (typically 25)
+     * @param brickGenerator the brick generator to use for creating new bricks
+     */
     public SimpleBoard(int width, int height, BrickGenerator brickGenerator) {
         this.width = width;
         this.height = height;
